@@ -19,8 +19,8 @@ COPY . .
 # Disable Next.js telemetry during build
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# Build the Next.js application
-RUN pnpm run build
+# Install pnpm and build the Next.js application
+RUN npm install -g pnpm && pnpm run build
 
 # Prepare the production image
 FROM base AS runner
@@ -33,6 +33,9 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # Add a non-root user for security
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
+
+# Install pnpm in the final stage
+RUN npm install -g pnpm
 
 # Copy necessary files and folders for production
 COPY --from=builder /app/public ./public
