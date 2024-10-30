@@ -5,7 +5,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package*.json ./
-RUN pnpm ci
+RUN npm ci
 
 FROM base AS builder
 WORKDIR /app
@@ -14,7 +14,7 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED 1
 
-RUN pnpm run build
+RUN npm run build
 
 FROM base AS runner
 WORKDIR /app
@@ -36,4 +36,4 @@ EXPOSE 3000
 
 ENV PORT 3000
 
-CMD ["pnpm", "start"]
+CMD ["npm", "start"]
