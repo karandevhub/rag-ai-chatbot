@@ -1,13 +1,14 @@
-// db.ts or similar
+// db.ts
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
-// Move this check to where you actually use the database connection
-const getDatabaseClient = () => {
-  if (!process.env.DATABASE_URL) {
-    throw new Error("DATABASE_URL environment variable is not defined");
-  }
-  return postgres(process.env.DATABASE_URL);
-};
+let db: any;
 
-export const db = drizzle(getDatabaseClient());
+try {
+  const client = postgres(process.env.DATABASE_URL || '');
+  db = drizzle(client);
+} catch (error) {
+  console.error('Database connection error:', error);
+}
+
+export { db };
