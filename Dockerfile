@@ -17,6 +17,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Disable Next.js telemetry during build
+ENV DATABASE_URL=$DATABASE_URL
+ENV GOOGLE_GENERATIVE_AI_API_KEY=$GOOGLE_GENERATIVE_AI_API_KEY
 ENV NEXT_TELEMETRY_DISABLED 1
 
 # Install pnpm and build the Next.js application
