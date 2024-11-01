@@ -28,8 +28,6 @@ WORKDIR /app
 
 # Set environment variables for production
 ENV NODE_ENV production
-ENV DATABASE_URL=$DATABASE_URL
-ENV API_KEY=$API_KEY
 ENV NEXT_TELEMETRY_DISABLED 1
 
 # Add a non-root user for security
