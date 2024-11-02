@@ -8,6 +8,13 @@
       "when": 1730470636286,
       "tag": "0000_simple_green_goblin",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1730536697639,
+      "tag": "0001_perpetual_maverick",
+      "breakpoints": true
     }
   ]
 }

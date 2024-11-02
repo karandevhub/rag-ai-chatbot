@@ -3,8 +3,9 @@ import { google } from "@ai-sdk/google";
 import { db } from "../db";
 import { cosineDistance, desc, gt, sql } from "drizzle-orm";
 import { embeddings } from "../db/schema/embeddings";
+import { openai } from "@ai-sdk/openai";
 
-const embeddingModel = google.textEmbeddingModel("text-embedding-004");
+const embeddingModel = openai.embedding('text-embedding-3-small');
 
 const generateChunks = (input: string): string[] => {
   console.log("chunks input", input);
