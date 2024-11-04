@@ -32,7 +32,7 @@ export async function extractTextFromPDF(file: Buffer | string | Blob): Promise<
 export async function createChunks(text: string[]): Promise<Chunk[]> {
   try {
     const splitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 2000,
+      chunkSize: 1000,
       chunkOverlap: 200,
     });
 

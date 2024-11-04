@@ -45,7 +45,7 @@ export async function POST(req: Request) {
           const results = await findRelevantContent(question);
           if (results?.length > 0) {
             console.log(`Found information: ${results[0].name}`);
-            return `Found information: ${results}`;
+            return results;
           }
           return "No relevant information found.";
         },

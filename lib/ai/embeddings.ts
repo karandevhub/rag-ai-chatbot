@@ -1,20 +1,26 @@
+import { embed, embedMany } from "ai";
 import { db } from "../db";
 import { cosineDistance, desc, gt, sql } from "drizzle-orm";
 import { embeddings } from "../db/schema/embeddings";
-import { OpenAIEmbeddings } from "@langchain/openai";
+import { openai } from "@ai-sdk/openai";
 
-const embeddingModel = new OpenAIEmbeddings();
-
+const embeddingModel = openai.embedding("text-embedding-3-small");
 
 export const generateEmbeddings = async (value: string) => {
-  const vectors = await embeddingModel.embedDocuments([value]);
-  return { content: value, embedding: vectors[0] };
+  const { embedding } = await embed({
+    model: embeddingModel,
+    value: value,
+  });
+  return { content: value, embedding: embedding };
 };
 
 export const generateEmbedding = async (value: string): Promise<number[]> => {
   const input = value.replaceAll("\\n", " ");
-  const vectors = await embeddingModel.embedDocuments([input]);
-  return vectors[0];
+  const { embedding } = await embed({
+    model: embeddingModel,
+    value: input,
+  });
+  return embedding;
 };
 
 export const findRelevantContent = async (userQuery: string) => {
