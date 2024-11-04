@@ -13,25 +13,26 @@ export const createResource = async (input: NewResourceParams) => {
   try {
     // Validate input data
     const { content } = insertResourceSchema.parse(input);
+    const cleanedContent = content.replace(/\0/g, '');
 
     // Insert resource and retrieve the inserted record
     const [resource] = await db
       .insert(resources)
-      .values({ content })
+      .values({ content:cleanedContent})
       .returning();
 
     console.log("Inserted resource:", resource);
 
     // Generate embeddings for the content
-    const embeddings = await generateEmbeddings(content);
+    const embeddings = await generateEmbeddings(cleanedContent);
     console.log("Generated embeddings:", embeddings);
 
     // Prepare embedding records with resourceId
-    const embeddingRecords = embeddings.map((embedding) => ({
+    const embeddingRecords = {
       resourceId: resource.id,
-      content: embedding.content,
-      embedding: embedding.embedding, // This should be an array of floats
-    }));
+      content: embeddings.content,
+      embedding: embeddings.embedding, // This should be an array of floats
+    }
 
     console.log("Prepared embedding records:", embeddingRecords);
 
@@ -48,3 +49,50 @@ export const createResource = async (input: NewResourceParams) => {
       : "Error, please try again.";
   }
 };
+
+
+
+
+// import { db } from "@/lib/db";
+// import { resources } from "@/lib/db/schema/resources";
+// import { embeddings } from "@/lib/db/schema/embeddings";
+
+// interface StoreResourceParams {
+//   content: string;
+//   embedding: number[];
+//   pageNumber?: number;
+// }
+
+// export async function storeResourceWithEmbeddings({
+//   content,
+//   embedding,
+//   pageNumber,
+// }: StoreResourceParams) {
+//   try {
+
+//     console.log("storeResourceWithEmbeddings",embedding)
+//     function cleanUTF8(str: string) {
+//       return str.replace(/[^\x00-\x7F]/g, "");
+//     }
+
+//     // Use cleaned content in the insert
+//     const [resource] = await db
+//       .insert(resources)
+//       .values({
+//         content: cleanUTF8(content),
+//         metadata: pageNumber ? { pageNumber } : undefined,
+//       })
+//       .returning();
+
+//     await db.insert(embeddings).values({
+//       resourceId: resource.id,
+//       content,
+//       embedding,
+//     });
+
+//     return resource;
+//   } catch (error) {
+//     console.error("Error storing resource and embedding:", error);
+//     throw error;
+//   }
+// }

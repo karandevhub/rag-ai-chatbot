@@ -1,8 +1,8 @@
-import { createResource } from '@/lib/actions/resources';
-import { findRelevantContent } from '@/lib/ai/embeddings';
-import { openai } from '@ai-sdk/openai';
-import { streamText, tool } from 'ai';
-import { z } from 'zod';
+import { createResource } from "@/lib/actions/resources";
+import { findRelevantContent } from "@/lib/ai/embeddings";
+import { openai } from "@ai-sdk/openai";
+import { streamText, tool } from "ai";
+import { z } from "zod";
 
 export const maxDuration = 30;
 
@@ -10,7 +10,7 @@ export async function POST(req: Request) {
   const { messages } = await req.json();
 
   const result = await streamText({
-    model: openai('gpt-3.5-turbo'),
+    model: openai("gpt-3.5-turbo"),
     messages,
     system: `You are a helpful assistant. Follow these rules strictly:
     1. Check your knowledge base before answering any questions using the getInformation tool
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
         parameters: z.object({
           content: z
             .string()
-            .describe('the content or resource to add to the knowledge base'),
+            .describe("the content or resource to add to the knowledge base"),
         }),
         execute: async ({ content }) => {
           const result = await createResource({ content });
@@ -35,16 +35,17 @@ export async function POST(req: Request) {
         },
       }),
       getInformation: tool({
-        type: 'function',
+        type: "function",
         description: `get information from your knowledge base to answer questions.
-          After getting information, you must respond with the information found.`,
+          After getting informations, you must respond with all the informations found in details.`,
         parameters: z.object({
-          question: z.string().describe('the users question'),
+          question: z.string().describe(`the user's question`),
         }),
         execute: async ({ question }) => {
           const results = await findRelevantContent(question);
           if (results?.length > 0) {
-            return `Found information: ${results[0].name}`;
+            console.log(`Found information: ${results[0].name}`);
+            return `Found information: ${results}`;
           }
           return "No relevant information found.";
         },
@@ -52,7 +53,7 @@ export async function POST(req: Request) {
     },
     temperature: 0.7,
     presencePenalty: 0.6,
-    frequencyPenalty: 0.2
+    frequencyPenalty: 0.2,
   });
 
   return result.toDataStreamResponse();
