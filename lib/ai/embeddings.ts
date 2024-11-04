@@ -4,7 +4,7 @@ import { cosineDistance, desc, gt, sql } from "drizzle-orm";
 import { embeddings } from "../db/schema/embeddings";
 import { openai } from "@ai-sdk/openai";
 
-const embeddingModel = openai.embedding("text-embedding-3-small");
+const embeddingModel = openai.embedding("text-embedding-ada-002");
 
 export const generateEmbeddings = async (value: string) => {
   const { embedding } = await embed({
