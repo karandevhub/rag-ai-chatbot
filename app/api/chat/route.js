@@ -27,6 +27,7 @@ export async function POST(req) {
         callbacks: [handlers],
       }
     );
+    console.log("chain",chain)
     return new Response(stream, {
       status: 200,
       headers: {

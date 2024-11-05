@@ -8,7 +8,7 @@ import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 export async function processDocuments() {
   // Load documents from the 'documents' directory
   const loader = new DirectoryLoader(
-    "documents/",
+    "./documents",
     {
       ".pdf": (path) => new PDFLoader(path),
       ".txt": (path) => new TextLoader(path)
