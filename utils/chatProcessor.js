@@ -18,7 +18,7 @@ export async function createChain(vectorStore) {
     Your task is to:
     1. Analyze the provided context efficiently.
     2. Extract the most relevant information.
-    4. Organize the information using combination of paragraphs, bullet points, headings, or numbered lists to increase the readablity.
+    4. Organize the information using combination of paragraphs, bullet points, bold text, headings, or numbered lists to increase the readablity.
     5. Avoid unnecessary elaboration or repetition.
     6. Proactively ask clarifying questions if the original question is unclear or ambiguous.
     7. Ensure your response is factually accurate based on the provided information. Do not speculate or make unsupported claims.
