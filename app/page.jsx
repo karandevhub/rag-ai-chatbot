@@ -66,6 +66,7 @@ export default function Chat() {
                   maxWidth: '70%',
                   padding: '1rem',
                   borderRadius: '0.5rem',
+                  whiteSpace: 'pre-wrap',
                   backgroundColor:
                     msg.role === 'user' ? '#333' : '#f3f3f3',
                   color: msg.role === 'user' ? '#fff' : '#333'
