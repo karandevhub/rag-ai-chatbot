@@ -5,7 +5,7 @@ import postgres from "postgres";
 let db: PostgresJsDatabase;
 
 try {
-  const client = postgres('postgres://postgres:mypgadminpass990@104.154.220.1:5432/postgres');
+  const client = postgres('');
   db = drizzle(client);
 } catch (error) {
   console.error('Database connection error:', error);

@@ -22,8 +22,8 @@ export async function POST(request: Request) {
 
       // Split documents
       const splitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 1000,
-        chunkOverlap: 20,
+        chunkSize: 2000,
+        chunkOverlap: 200,
       });
       const splittedDocs = await splitter.splitDocuments(docs);
 

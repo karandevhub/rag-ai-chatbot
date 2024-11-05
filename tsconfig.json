@@ -34,7 +34,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "app/api/chat/route.js", "app/page.jsx"  ],
   "exclude": [
     "node_modules"
   ]
