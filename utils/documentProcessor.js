@@ -4,16 +4,17 @@ import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
+import { DocxLoader } from "@langchain/community/document_loaders/fs/docx";
+import { PPTXLoader } from "@langchain/community/document_loaders/fs/pptx";
 
 export async function processDocuments() {
   // Load documents from the 'documents' directory
-  const loader = new DirectoryLoader(
-    "public/documents/",
-    {
-      ".pdf": (path) => new PDFLoader(path),
-      ".txt": (path) => new TextLoader(path)
-    }
-  );
+  const loader = new DirectoryLoader("public/documents/", {
+    ".pdf": (path) => new PDFLoader(path),
+    ".txt": (path) => new TextLoader(path),
+    ".docx": (path) =>  new DocxLoader(path),
+    ".pptx": (path) =>  new PPTXLoader(path),
+  });
 
   const docs = await loader.load();
 
@@ -34,6 +35,6 @@ export async function processDocuments() {
     splitDocs,
     embeddings
   );
-  console.log("vector store",vectorStore)
+  console.log("vector store", vectorStore);
   return vectorStore;
 }
