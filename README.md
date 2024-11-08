@@ -1,14 +1,22 @@
-# Vercel AI SDK RAG Guide Starter Project
+# RAG AI Chatbot with Multi-Document Support
 
-This is the starter project for the Vercel AI SDK [Retrieval-Augmented Generation (RAG) guide](https://sdk.vercel.ai/docs/guides/rag-chatbot).
+This project is a **Retrieval-Augmented Generation (RAG) AI chatbot** developed with **Next.js** and **LangChain**. It enables users to ask questions and receive responses from a collection of documents, such as PDFs, by using advanced retrieval techniques and embeddings for accurate, context-aware answers.
 
-In this project, you will build a chatbot that will only respond with information that it has within its knowledge base. The chatbot will be able to both store and retrieve information. This project has many interesting use cases from customer support through to building your own second brain!
+## Features
 
-This project will use the following stack:
+- **Multi-Document Retrieval**: Supports querying across multiple document types (e.g., PDFs) for comprehensive responses.
+- **Next.js and LangChain Integration**: Combines Next.js for efficient routing and UI with LangChain for intelligent document retrieval and response generation.
+- **Embeddings for Improved Accuracy**: Utilizes vector embeddings to match user queries with relevant document content, ensuring high answer accuracy.
 
-- [Next.js](https://nextjs.org) 14 (App Router)
-- [Vercel AI SDK](https://sdk.vercel.ai/docs)
-- [OpenAI](https://openai.com)
-- [Drizzle ORM](https://orm.drizzle.team)
-- [Postgres](https://www.postgresql.org/) with [ pgvector ](https://github.com/pgvector/pgvector)
-- [shadcn-ui](https://ui.shadcn.com) and [TailwindCSS](https://tailwindcss.com) for styling
+## Tech Stack
+
+- **Next.js**: Handles both frontend and backend, allowing for smooth UI and server-side processing.
+- **LangChain**: Provides advanced document querying and response capabilities.
+- **Vector Embeddings**: Powers the retrieval-augmented generation by transforming text data into vector format for precise document matching.
+
+## Setup and Installation
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/karandevhub/rag_ai-chatbot.git
+   cd rag_ai-chatbot
