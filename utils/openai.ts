@@ -2,13 +2,11 @@ import { OpenAIEmbeddings } from '@langchain/openai';
 import { MongoDBAtlasVectorSearch, MongoDBAtlasVectorSearchLibArgs } from '@langchain/mongodb';
 import { MongoClient } from "mongodb";
 import dotenv from 'dotenv';
-import env from "@beam-australia/react-env";
 dotenv.config();
 
 let embeddingsInstance: OpenAIEmbeddings | null = null;
-const URI = env("MONGODB_URI")
-console.log(URI)
-export const client = new MongoClient(URI);
+
+export const client = new MongoClient("mongodb+srv://daredevil15963:U8sPkw3zv88aPgG1@cluster0.nni1s.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0");
 const namespace = "chatter.training_data";
 const [dbName, collectionName] = namespace.split(".");
 export const collection = client.db(dbName).collection(collectionName);
