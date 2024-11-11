@@ -1,54 +1,98 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { getEmbeddingsTransformer, searchArgs } from "@/utils/openai";
+import { MongoDBAtlasVectorSearch } from "@langchain/mongodb";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
-import { createResource } from "@/lib/actions/resources";
+import { DocxLoader } from "@langchain/community/document_loaders/fs/docx";
+import { PPTXLoader } from "@langchain/community/document_loaders/fs/pptx";
 
-
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const formData = await request.formData();
-    const file = formData.get("file") as File;
+    const formData: FormData = await req.formData();
+    const uploadedFiles = formData.getAll("filepond");
 
-    if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
-    }
+    if (uploadedFiles && uploadedFiles.length > 0) {
+      for (const uploadedFile of uploadedFiles) {
+        if (uploadedFile instanceof File) {
+          const fileBlob = new Blob([await uploadedFile.arrayBuffer()], {
+            type: uploadedFile.type,
+          });
 
-    try {
-      // Process PDF
-      const loader = new PDFLoader(file,{
-        splitPages:false
-      });
-      const docs = await loader.load();
+          let loader;
+          let docs;
+          switch (uploadedFile.type) {
+            case "application/pdf":
+              loader = new PDFLoader(fileBlob, {
+                splitPages: false,
+              });
+              docs = await loader.load();
+              break;
+            case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+              loader = new DocxLoader(fileBlob);
+              docs = await loader.load();
+              break;
+            case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+              loader = new PPTXLoader(fileBlob);
+              docs = await loader.load();
+              break;
+            default:
+              console.log(
+                `Unsupported file type: ${uploadedFile.type}. Skipping this file.`
+              );
+              return NextResponse.json(
+                {
+                  message: `Unsupported file type: ${uploadedFile.type}. Skipping this file.`,
+                },
+                { status: 400 }
+              );
+          }
 
-      // Split documents
-      const splitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 2000,
-        chunkOverlap: 200,
-      });
-      const splittedDocs = await splitter.splitDocuments(docs);
+          if (docs.length === 0) {
+            return NextResponse.json(
+              { message: "No text content found in the PDF file." },
+              { status: 400 }
+            );
+          }
 
-    //   console.log("splitted",splittedDocs);
+          const textSplitter = new RecursiveCharacterTextSplitter({
+            chunkSize: 1000,
+            chunkOverlap: 200,
+          });
 
-      // Add each chunk to the knowledge base
-      for (const doc of splittedDocs) {
-        await createResource({ content: doc.pageContent });
+          const splitDocs = await textSplitter.splitDocuments(docs);
+
+          const chunksWithMetadata = splitDocs.map((doc) => ({
+            ...doc,
+            metadata: {
+              fileName: uploadedFile.name,
+              type:uploadedFile.type
+            },
+          }));
+
+          await MongoDBAtlasVectorSearch.fromDocuments(
+            chunksWithMetadata,
+            getEmbeddingsTransformer(),
+            searchArgs()
+          );
+        } else {
+          console.log(
+            "Uploaded file is not in the expected format. Skipping this file."
+          );
+        }
       }
 
-      // Clean up: remove the temporary file
-
-      return NextResponse.json({ success: true });
-    } catch (error) {
-      console.log(error);
-      throw error;
+      return NextResponse.json(
+        { message: "All uploaded files processed successfully" },
+        { status: 200 }
+      );
+    } else {
+      console.log("No files found.");
+      return NextResponse.json({ message: "No files found" }, { status: 500 });
     }
   } catch (error) {
-    console.error("Error processing PDF:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to process PDF",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
+    console.error("Error processing request:", error);
+    return new NextResponse("An error occurred during processing.", {
+      status: 500,
+    });
   }
 }
