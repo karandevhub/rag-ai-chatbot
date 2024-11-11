@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { FilePond } from 'react-filepond';
 import 'filepond/dist/filepond.min.css';
 import { Trash2 } from 'lucide-react';
+import Header from '@/components/Header';
 
 interface FileInfo {
     name: string;
@@ -74,7 +75,8 @@ export default function Home() {
     console.log(files)
     return (
         <main className="min-h-screen bg-gray-50">
-            <div className="max-w-4xl mx-auto p-6">
+                <Header />
+            <div className="max-w-4xl mx-auto p-2">
                 <div className="bg-white rounded-lg shadow p-6 mb-6">
                     <h2 className="text-xl font-semibold mb-4">Upload Document</h2>
                     <FilePond
