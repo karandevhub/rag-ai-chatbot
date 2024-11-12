@@ -23,13 +23,6 @@ const Header: FC<Props> = ({ clearHistory }) => {
             <div className="container mx-auto px-2 py-3 flex items-center">
                 <h1 className="text-xl font-semibold">R.A.G</h1>
                 <div className="ml-auto flex items-center space-x-4">
-                    {isHome && <Button
-                        variant="outline"
-                        onClick={clearHistory}
-                        className="text-sm"
-                    >
-                        Clear History
-                    </Button>}
                     <Link
                         href={isHome ? '/teach' : '/'}
                         className="inline-flex items-center space-x-2 bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"

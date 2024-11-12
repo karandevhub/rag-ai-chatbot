@@ -9,7 +9,7 @@ import { Loader2, Send } from 'lucide-react';
 import HistoryLimitAlert from '@/components/HistoryLimitAlert';
 import Header from '@/components/Header';
 
-const HISTORY_LIMIT = 30;
+const HISTORY_LIMIT = 100;
 
 
 
