@@ -23,7 +23,7 @@ export function getEmbeddingsTransformer(): OpenAIEmbeddings {
   try {
     if (!embeddingsInstance) {
       embeddingsInstance = new OpenAIEmbeddings({
-        openAIApiKey:"sndsnd"
+        openAIApiKey: process.env.OPENAI_API_KEY ?? "",
       });
     }
     return embeddingsInstance;
@@ -31,7 +31,7 @@ export function getEmbeddingsTransformer(): OpenAIEmbeddings {
     console.error("Error creating OpenAIEmbeddings instance:", error);
     console.error("Retrying creation of OpenAIEmbeddings...");
     embeddingsInstance = new OpenAIEmbeddings({
-      openAIApiKey:"kjshdkjfh"
+      openAIApiKey: process.env.OPENAI_API_KEY ?? "",
     });
     if (!embeddingsInstance) {
       throw new Error(
@@ -45,24 +45,18 @@ export function getEmbeddingsTransformer(): OpenAIEmbeddings {
 
 export function vectorStore(): MongoDBAtlasVectorSearch {
   const vectorStore: MongoDBAtlasVectorSearch = new MongoDBAtlasVectorSearch(
-    new OpenAIEmbeddings({
-      openAIApiKey:'kjskdd'
-    }),
+    getEmbeddingsTransformer(),
     searchArgs()
   );
   return vectorStore;
 }
 
 export let inMemoryStore: MemoryVectorStore = new MemoryVectorStore(
-  new OpenAIEmbeddings({
-    openAIApiKey:'kjskjd'
-  })
+  new OpenAIEmbeddings(getEmbeddingsTransformer())
 );
 export async function inMemoryVectorStore(): Promise<MemoryVectorStore> {
   try {
-    inMemoryStore = new MemoryVectorStore(new OpenAIEmbeddings({
-      openAIApiKey:'kjskjd'
-    }));
+    inMemoryStore = new MemoryVectorStore(getEmbeddingsTransformer());
     console.log("Memory Vector Store initialized successfully.");
     return inMemoryStore;
   } catch (error) {
