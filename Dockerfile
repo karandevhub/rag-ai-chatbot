@@ -46,7 +46,6 @@ COPY --from=builder /app/package.json ./package.json
 USER nextjs
 EXPOSE 3000
 
-USER root
 # Set the port and start the application
 ENV PORT 3000
 CMD ["pnpm", "start"]
