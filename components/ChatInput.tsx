@@ -1,14 +1,27 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, ChangeEvent, FormEvent, KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { Paperclip, Send, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
-const ChatInput = ({ input, handleInputChange, handleSubmit, isLoading }) => {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const fileInputRef = useRef(null);
+interface ChatInputProps {
+  input: string;
+  handleInputChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  handleSubmit: (e: FormEvent<HTMLFormElement> | ReactKeyboardEvent<HTMLTextAreaElement>) => void;
+  isLoading: boolean;
+}
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
+const ChatInput: React.FC<ChatInputProps> = ({
+  input,
+  handleInputChange,
+  handleSubmit,
+  isLoading
+}) => {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       setSelectedFile(file);
     }
@@ -21,24 +34,35 @@ const ChatInput = ({ input, handleInputChange, handleSubmit, isLoading }) => {
     }
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     handleSubmit(e);
+  };
+
+  const handleKeyPress = (e: ReactKeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (input?.trim() && !isLoading) {
+        if (formRef.current) {
+          handleSubmit(e);
+        }
+      }
+    }
   };
 
   return (
     <div className="sticky bottom-0 p-4 bg-background">
       <div className="container mx-auto max-w-4xl">
-        <form onSubmit={onSubmit}>
-          {/* File Upload Indicator */}
+        <form ref={formRef} onSubmit={onSubmit}>
+
           {selectedFile && (
             <div className="flex justify-end mb-2">
               <div className="flex items-center bg-gray-100 px-2 py-1 rounded-lg">
                 <span className="text-sm mr-2 truncate max-w-[150px]">
                   {selectedFile.name}
                 </span>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={removeFile}
                   className="text-red-500 hover:text-red-700 transition-colors duration-200"
                 >
@@ -49,40 +73,37 @@ const ChatInput = ({ input, handleInputChange, handleSubmit, isLoading }) => {
           )}
 
           <div className="relative flex items-center">
-            {/* Hidden File Input */}
-            <input 
-              type="file" 
+
+            <input
+              type="file"
               ref={fileInputRef}
-              className="hidden" 
+              className="hidden"
               onChange={handleFileUpload}
-              accept=".pdf,.doc,.docx,.pptx"
+              accept=".pdf,.docx,.pptx"
             />
 
-            {/* Message Input Area */}
             <div className="relative w-full">
-              <Textarea 
+              <Textarea
                 value={input}
                 onChange={handleInputChange}
+                onKeyDown={handleKeyPress}
                 placeholder="Type your message..."
-                className="w-full pr-24 pl-4 resize-none rounded-2xl border border-gray-200 hover:border-gray-300 focus:border-gray-200 transition-colors duration-200 outline-none ring-0 focus:ring-0 focus:outline-none"
+                className="w-full pr-24 pl-4 resize-none rounded-2xl border border-gray-300 hover:border-gray-400 focus:border-gray-200 transition-colors duration-200 outline-none ring-0 focus:ring-0 focus:outline-none"
                 rows={1}
                 disabled={isLoading}
-                style={{ 
+                style={{
                   minHeight: '60px',
                   maxHeight: '200px',
                   overflowY: 'auto',
                   borderRadius: '10px',
                   scrollbarWidth: 'none',
-                  msOverflowStyle: 'none', 
-                  '&::WebkitScrollbar': {
-                    display: 'none' 
-                  }
-                }}
+                  msOverflowStyle: 'none'
+                } as React.CSSProperties}
               />
 
-              {/* Action Buttons */}
+
               <div className="absolute top-1/2 transform -translate-y-1/2 right-2 flex space-x-1">
-                {/* File Upload Button */}
+
                 <Button
                   type="button"
                   variant="ghost"
@@ -94,7 +115,7 @@ const ChatInput = ({ input, handleInputChange, handleSubmit, isLoading }) => {
                   <Paperclip size={24} />
                 </Button>
 
-                {/* Send Button */}
+
                 <Button
                   type="submit"
                   variant="ghost"

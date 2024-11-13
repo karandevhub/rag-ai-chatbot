@@ -1,9 +1,8 @@
 'use client'
 
 import React, { FC } from 'react'
-import { Button } from './ui/button'
 import Link from 'next/link'
-import { BookOpen, Bot, Brain, BrainCircuit } from 'lucide-react'
+import { Bot,BrainCircuit } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 

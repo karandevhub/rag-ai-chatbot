@@ -2,10 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useChat } from 'ai/react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import ReactMarkdown from 'react-markdown';
-import { Bot, Loader2, Send, Sparkles, User } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import HistoryLimitAlert from '@/components/HistoryLimitAlert';
 import Header from '@/components/Header';
 import ChatInput from '@/components/ChatInput';
@@ -149,7 +147,7 @@ export default function Chat() {
         ))}
         
         {/* Streaming indicator */}
-        {true&& (
+        {isLoading&& (
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-full flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-blue-600" />
