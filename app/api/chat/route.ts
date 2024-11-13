@@ -22,7 +22,7 @@ export async function POST(req: Request) {
 
     const llm = new ChatOpenAI({
       modelName: "gpt-3.5-turbo",
-      openAIApiKey: 'xyzasnmfbd',
+      openAIApiKey: 'xyzassdklfdskjsdsnmfbd',
       temperature: 0.5,
       streaming: true,
       callbacks: [handlers],
