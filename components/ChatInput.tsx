@@ -25,6 +25,40 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
+
+
+
+  const removeFile = async () => {
+    setIsUploading(true)
+    try {
+      const response = await fetch('api/clearstore', {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.statusText}`);
+      }
+      localStorage.removeItem('uploadedFile');
+      setFile(null);
+      setUploadError('');
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (error) {
+      setIsUploading(false);
+      console.error('Error clearing store file:', error);
+      setUploadError('Failed to clear store. Please try again.')
+    }
+  };
+
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleSubmit(e);
+  };
+
+  
+
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = e.target.files?.[0];
     if (uploadedFile) {
@@ -84,34 +118,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   }, [storedFile]);
 
-  const removeFile = async () => {
-    setIsUploading(true)
-    try {
-      const response = await fetch('api/clearstore', {
-        method: 'GET',
-      });
-
-      if (!response.ok) {
-        throw new Error(`Upload failed: ${response.statusText}`);
-      }
-      localStorage.removeItem('uploadedFile');
-      setFile(null);
-      setUploadError('');
-      setIsUploading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    } catch (error) {
-      setIsUploading(false);
-      console.error('Error clearing store file:', error);
-      setUploadError('Failed to clear store. Please try again.')
-    }
-  };
-
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    handleSubmit(e);
-  };
+ 
 
   const handleKeyPress = (e: ReactKeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -125,7 +132,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="sticky bottom-0 p-4 bg-background">
+    <div className="sticky bottom-0 p-4 bg-transparent">
       <div className="container mx-auto max-w-4xl">
         <form ref={formRef} onSubmit={onSubmit}>
           {uploadError && (
@@ -172,11 +179,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 onChange={handleInputChange}
                 onKeyDown={handleKeyPress}
                 placeholder="Type your message..."
-                className="w-full pr-24 pl-4 resize-none rounded-2xl border border-gray-300 hover:border-gray-400 focus:border-gray-200 transition-colors duration-200 outline-none ring-0 focus:ring-0 focus:outline-none"
+                className="w-full pr-24 pl-4 resize-none rounded-2xl border border-gray-400 hover:border-gray-500 focus:border-gray-200 transition-colors duration-200 outline-none ring-0 focus:ring-0 focus:outline-none"
                 rows={1}
                 disabled={isLoading}
                 style={{
-                  minHeight: '60px',
+                  minHeight: '70px',
                   maxHeight: '200px',
                   overflowY: 'auto',
                   borderRadius: '10px',

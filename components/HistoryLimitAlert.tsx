@@ -3,7 +3,7 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Button } from "./ui/button";
 
 const HistoryLimitAlert = ({ onClose }: { onClose: () => void }) => (
-    <Alert variant="destructive" className="mb-4 mx-auto max-w-4xl">
+    <Alert variant="destructive" className="absolute left-0 right-0 top-10 mb-4 mx-auto max-w-4xl bg-background">
       <AlertTriangle className="h-4 w-4" />
       <AlertTitle>Memory Full</AlertTitle>
       <AlertDescription className="mt-2">
