@@ -1,15 +1,15 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { useChat } from 'ai/react';
 import ReactMarkdown from 'react-markdown';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, User } from 'lucide-react';
 import HistoryLimitAlert from '@/components/HistoryLimitAlert';
 import Header from '@/components/Header';
 import ChatInput from '@/components/ChatInput';
 import StreamingDots from '@/components/StreamingDots';
 
-const HISTORY_LIMIT = 100;
+const HISTORY_LIMIT = 6;
 
 
 
@@ -77,15 +77,15 @@ export default function Chat() {
   };
 
   // Wrap handleSubmit to check message limit
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>) => {
     e.preventDefault();
     if (messages.length >= HISTORY_LIMIT) {
       setShowHistoryAlert(true);
       return;
     }
-    originalHandleSubmit(e);
+    originalHandleSubmit(e as FormEvent<HTMLFormElement>);
   };
-
+  
   return (
     <div className="flex flex-col h-screen">
     <Header clearHistory={clearHistory} />

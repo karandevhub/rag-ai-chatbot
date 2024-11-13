@@ -1,5 +1,5 @@
 import React, { useRef, useState, ChangeEvent, FormEvent, KeyboardEvent as ReactKeyboardEvent } from 'react';
-import { Paperclip, Send, X } from 'lucide-react';
+import { Paperclip, Send, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -17,21 +17,64 @@ const ChatInput: React.FC<ChatInputProps> = ({
   isLoading
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadError, setUploadError] = useState<string>('');
+  const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedFile(file);
+      setUploadError('');
+      setIsUploading(true);
+
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('api/uploadInChat', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Upload failed: ${response.statusText}`);
+        }
+
+        // Handle successful upload
+        const data = await response.json();
+        console.log('File uploaded successfully:', data);
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        setUploadError('Failed to upload file. Please try again.');
+        removeFile();
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 
-  const removeFile = () => {
-    setSelectedFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+  const removeFile = async () => {
+    try {
+      const response = await fetch('api/clearstore', {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.statusText}`);
+      }
+      setSelectedFile(null);
+      setUploadError('');
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (error) {
+      console.error('Error cleaing store file:', error);
+      setUploadError('Failed to clear store. Please try again.')
     }
+
   };
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -54,6 +97,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
     <div className="sticky bottom-0 p-4 bg-background">
       <div className="container mx-auto max-w-4xl">
         <form ref={formRef} onSubmit={onSubmit}>
+          {uploadError && (
+            <div className="flex justify-end mb-2">
+              <div className="text-sm text-red-500">{uploadError}</div>
+            </div>
+          )}
 
           {selectedFile && (
             <div className="flex justify-end mb-2">
@@ -64,16 +112,20 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 <button
                   type="button"
                   onClick={removeFile}
+                  disabled={isUploading}
                   className="text-red-500 hover:text-red-700 transition-colors duration-200"
                 >
-                  <X size={16} />
+                  {isUploading ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <X size={16} />
+                  )}
                 </button>
               </div>
             </div>
           )}
 
           <div className="relative flex items-center">
-
             <input
               type="file"
               ref={fileInputRef}
@@ -101,30 +153,27 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 } as React.CSSProperties}
               />
 
-
               <div className="absolute top-1/2 transform -translate-y-1/2 right-2 flex space-x-1">
-
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
                   onClick={() => fileInputRef.current?.click()}
-                  disabled={isLoading}
+                  disabled={isLoading || isUploading}
                   className="text-gray-500 hover:text-blue-500 transition-colors duration-200 rounded-full"
                 >
                   <Paperclip size={24} />
                 </Button>
-
 
                 <Button
                   type="submit"
                   variant="ghost"
                   size="icon"
                   disabled={isLoading || !input?.trim()}
-                  className={`text-blue-500 transition-colors duration-200 rounded-full
+                  className={`text-blue-500 transition-colors duration-200  rounded-full
                     ${!input?.trim() ? 'opacity-50 cursor-not-allowed' : 'hover:text-blue-700 hover:bg-blue-50'}`}
                 >
-                  <Send size={20} />
+                  <Send fontWeight={"bold"} size={20} />
                 </Button>
               </div>
             </div>

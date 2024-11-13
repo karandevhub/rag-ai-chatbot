@@ -1,6 +1,6 @@
 import { LangChainStream } from 'ai';
 import { ChatOpenAI } from "@langchain/openai";
-import { vectorStore } from "@/utils/openai";
+import { inMemoryStore, inMemoryVectorStore, vectorStore } from "@/utils/openai";
 import { NextResponse } from "next/server";
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { StringOutputParser } from "@langchain/core/output_parsers";
@@ -21,12 +21,19 @@ export async function POST(req: Request) {
     const llm = new ChatOpenAI({
       modelName: "gpt-3.5-turbo",
       openAIApiKey: process.env.OPENAI_API_KEY,
-      temperature: 0.5, // Lower temperature for more deterministic output
+      temperature: 0.5,
       streaming: true,
       callbacks: [handlers],
     });
 
-    const retriever = vectorStore().asRetriever({
+    const mongoretriever = vectorStore().asRetriever({
+      searchType: "mmr",
+      searchKwargs: { fetchK: 10, lambda: 0.25 },
+    });
+
+    console.log("in",inMemoryStore)
+    console.log("out",mongoretriever)
+    const memoryretriver = inMemoryStore.asRetriever({
       searchType: "mmr",
       searchKwargs: { fetchK: 10, lambda: 0.25 },
     });
@@ -64,20 +71,22 @@ export async function POST(req: Request) {
     });
 
     const retrievalChain = await createRetrievalChain({
-      retriever: retriever,
+      retriever: memoryretriver,
       combineDocsChain,
     });
 
-    retrievalChain.invoke({
+   const res= retrievalChain.invoke({
       input: currentMessage,
       chat_history: previousMessages,
     });
 
+    console.log(res)
+
     return new Response(stream, {
-      status: 200,
       headers: {
-        "Content-Type": "text/plain; charset=utf-8",
-        "Transfer-Encoding": "chunked",
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
       },
     });
   } catch (e) {

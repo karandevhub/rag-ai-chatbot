@@ -13,8 +13,6 @@ interface Props {
 const Header: FC<Props> = ({ clearHistory }) => {
     const pathname = usePathname()
 
-    console.log("path", pathname)
-
     const isHome = pathname === '/'
 
     return (

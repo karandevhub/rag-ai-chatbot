@@ -24,6 +24,8 @@
     "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
     "filepond": "^4.32.1",
+    "filepond-plugin-file-validate-type": "^1.2.9",
+    "filepond-plugin-image-preview": "^4.6.12",
     "langchain": "^0.3.5",
     "lucide-react": "^0.456.0",
     "mammoth": "^1.8.0",
