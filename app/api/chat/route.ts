@@ -1,3 +1,5 @@
+'use server'; 
+
 import { LangChainStream } from 'ai';
 import { ChatOpenAI } from "@langchain/openai";
 import { inMemoryStore, vectorStore } from "@/utils/openai";
@@ -6,7 +8,9 @@ import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { createRetrievalChain } from "langchain/chains/retrieval";
+import dotenv from "dotenv";
 
+dotenv.config();
 export async function POST(req: Request) {
   try {
     const { stream, handlers } = LangChainStream();

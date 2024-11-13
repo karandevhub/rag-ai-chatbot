@@ -60,7 +60,7 @@ export default function Chat() {
 
   useEffect(() => {
     if (messages.length > 0 && isClient) {
-      localStorage.setItem('chatHistory', JSON.stringify(messages));
+      window?.localStorage.setItem('chatHistory', JSON.stringify(messages));
     }
   }, [messages, isClient]);
 
@@ -71,7 +71,7 @@ export default function Chat() {
   }, [messages]);
 
   const clearHistory = () => {
-    localStorage.removeItem('chatHistory');
+    window?.localStorage.removeItem('chatHistory');
     setMessages([]);
     setShowHistoryAlert(false);
   };

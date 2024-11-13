@@ -1,9 +1,10 @@
-import React, { useRef, useState, ChangeEvent, FormEvent, KeyboardEvent as ReactKeyboardEvent } from 'react';
+'use client';
+
+import React, { useRef, useState, ChangeEvent, FormEvent, KeyboardEvent as ReactKeyboardEvent, useEffect } from 'react';
 import { Paperclip, Send, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { getFileIcon } from '@/lib/utils';
-
 
 interface ChatInputProps {
   input: string;
@@ -18,22 +19,25 @@ const ChatInput: React.FC<ChatInputProps> = ({
   handleSubmit,
   isLoading
 }) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [file, setFile] = useState<{ name: string; type: string } | null>(null);
   const [uploadError, setUploadError] = useState<string>('');
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
+    const uploadedFile = e.target.files?.[0];
+    if (uploadedFile) {
+      setFile({
+        name: uploadedFile.name,
+        type: uploadedFile.type
+      });
       setUploadError('');
       setIsUploading(true);
 
       try {
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('file', uploadedFile);
 
         const response = await fetch('api/uploadInChat', {
           method: 'POST',
@@ -44,9 +48,15 @@ const ChatInput: React.FC<ChatInputProps> = ({
           throw new Error(`Upload failed: ${response.statusText}`);
         }
 
-        // Handle successful upload
-        const data = await response.json();
-        console.log('File uploaded successfully:', data);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem("uploadedFile", JSON.stringify({
+            name: uploadedFile.name,
+            type: uploadedFile.type
+          }));
+        }
+
+
+        console.log(`Uploaded file`, uploadedFile.name);
       } catch (error) {
         console.error('Error uploading file:', error);
         setUploadError('Failed to upload file. Please try again.');
@@ -56,8 +66,26 @@ const ChatInput: React.FC<ChatInputProps> = ({
       }
     }
   };
+  let storedFile: any
+
+
+  if (typeof window !== "undefined") {
+    storedFile = window?.localStorage.getItem("uploadedFile");
+  }
+  
+
+
+  useEffect(() => {
+    try {
+      setFile(storedFile ? JSON.parse(storedFile) : null);
+    } catch (error) {
+      console.error("Error parsing stored file:", error);
+      setFile(null);
+    }
+  }, [storedFile]);
 
   const removeFile = async () => {
+    setIsUploading(true)
     try {
       const response = await fetch('api/clearstore', {
         method: 'GET',
@@ -66,17 +94,18 @@ const ChatInput: React.FC<ChatInputProps> = ({
       if (!response.ok) {
         throw new Error(`Upload failed: ${response.statusText}`);
       }
-      setSelectedFile(null);
+      localStorage.removeItem('uploadedFile');
+      setFile(null);
       setUploadError('');
       setIsUploading(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
     } catch (error) {
-      console.error('Error cleaing store file:', error);
+      setIsUploading(false);
+      console.error('Error clearing store file:', error);
       setUploadError('Failed to clear store. Please try again.')
     }
-
   };
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -105,12 +134,12 @@ const ChatInput: React.FC<ChatInputProps> = ({
             </div>
           )}
 
-          {selectedFile && (
+          {file && (
             <div className="flex justify-end mb-2">
               <div className="flex items-center bg-gray-100 px-2 py-1 rounded-lg">
                 <span className="text-sm mr-2 truncate max-w-[150px]">
-                  {getFileIcon(selectedFile.type)}
-                  {selectedFile.name}
+                  {getFileIcon(file.type)}
+                  {file.name}
                 </span>
                 <button
                   type="button"

@@ -1,3 +1,5 @@
+'use server';
+
 import { OpenAIEmbeddings } from "@langchain/openai";
 import {
   MongoDBAtlasVectorSearch,
