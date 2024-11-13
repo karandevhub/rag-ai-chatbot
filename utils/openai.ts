@@ -22,13 +22,17 @@ export const collection = client.db(dbName).collection(collectionName);
 export function getEmbeddingsTransformer(): OpenAIEmbeddings {
   try {
     if (!embeddingsInstance) {
-      embeddingsInstance = new OpenAIEmbeddings();
+      embeddingsInstance = new OpenAIEmbeddings({
+        openAIApiKey:"sndsnd"
+      });
     }
     return embeddingsInstance;
   } catch (error) {
     console.error("Error creating OpenAIEmbeddings instance:", error);
     console.error("Retrying creation of OpenAIEmbeddings...");
-    embeddingsInstance = new OpenAIEmbeddings();
+    embeddingsInstance = new OpenAIEmbeddings({
+      openAIApiKey:"kjshdkjfh"
+    });
     if (!embeddingsInstance) {
       throw new Error(
         "Failed to create OpenAIEmbeddings instance after retries. Check the logs for details."
@@ -41,18 +45,24 @@ export function getEmbeddingsTransformer(): OpenAIEmbeddings {
 
 export function vectorStore(): MongoDBAtlasVectorSearch {
   const vectorStore: MongoDBAtlasVectorSearch = new MongoDBAtlasVectorSearch(
-    new OpenAIEmbeddings(),
+    new OpenAIEmbeddings({
+      openAIApiKey:'kjskdd'
+    }),
     searchArgs()
   );
   return vectorStore;
 }
 
 export let inMemoryStore: MemoryVectorStore = new MemoryVectorStore(
-  new OpenAIEmbeddings()
+  new OpenAIEmbeddings({
+    openAIApiKey:'kjskjd'
+  })
 );
 export async function inMemoryVectorStore(): Promise<MemoryVectorStore> {
   try {
-    inMemoryStore = new MemoryVectorStore(new OpenAIEmbeddings());
+    inMemoryStore = new MemoryVectorStore(new OpenAIEmbeddings({
+      openAIApiKey:'kjskjd'
+    }));
     console.log("Memory Vector Store initialized successfully.");
     return inMemoryStore;
   } catch (error) {
