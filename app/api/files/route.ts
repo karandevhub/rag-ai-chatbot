@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import dotenv from "dotenv";
 import { client, collection } from "@/utils/openai";
 
+
 dotenv.config();
 
 export async function GET(request: NextRequest) {
