@@ -23,7 +23,7 @@ export function getEmbeddingsTransformer(): OpenAIEmbeddings {
   try {
     if (!embeddingsInstance) {
       embeddingsInstance = new OpenAIEmbeddings({
-        openAIApiKey: process.env.OPENAI_API_KEY ?? "",
+        openAIApiKey: process.env.OPENAI_API_KEY || "",
       });
     }
     return embeddingsInstance;
@@ -31,7 +31,7 @@ export function getEmbeddingsTransformer(): OpenAIEmbeddings {
     console.error("Error creating OpenAIEmbeddings instance:", error);
     console.error("Retrying creation of OpenAIEmbeddings...");
     embeddingsInstance = new OpenAIEmbeddings({
-      openAIApiKey: process.env.OPENAI_API_KEY ?? "",
+      openAIApiKey: process.env.OPENAI_API_KEY || "",
     });
     if (!embeddingsInstance) {
       throw new Error(
