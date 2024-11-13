@@ -5,6 +5,7 @@ import { FilePond } from 'react-filepond';
 import 'filepond/dist/filepond.min.css';
 import { Trash2 } from 'lucide-react';
 import Header from '@/components/Header';
+import { getFileIcon } from '@/lib/utils';
 
 interface FileInfo {
     name: string;
@@ -12,6 +13,7 @@ interface FileInfo {
     size: number;
     lastModified: string;
 }
+
 
 export default function Home() {
     const [files, setFiles] = useState<FileInfo[]>([]);
@@ -56,21 +58,6 @@ export default function Home() {
         }
     };
 
-
-
-    const getFileIcon = (fileType: string): string => {
-       
-        switch (fileType) {
-            case 'application/pdf':
-                return '📝';
-            case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-                return '📃';
-            case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
-                return '📊';
-            default:
-                return '📎';
-        }
-    };
 
     console.log(files)
     return (

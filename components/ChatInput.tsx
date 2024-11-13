@@ -2,6 +2,8 @@ import React, { useRef, useState, ChangeEvent, FormEvent, KeyboardEvent as React
 import { Paperclip, Send, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { getFileIcon } from '@/lib/utils';
+
 
 interface ChatInputProps {
   input: string;
@@ -107,6 +109,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             <div className="flex justify-end mb-2">
               <div className="flex items-center bg-gray-100 px-2 py-1 rounded-lg">
                 <span className="text-sm mr-2 truncate max-w-[150px]">
+                  {getFileIcon(selectedFile.type)}
                   {selectedFile.name}
                 </span>
                 <button

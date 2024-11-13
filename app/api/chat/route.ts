@@ -1,6 +1,6 @@
 import { LangChainStream } from 'ai';
 import { ChatOpenAI } from "@langchain/openai";
-import { inMemoryStore, inMemoryVectorStore, vectorStore } from "@/utils/openai";
+import { inMemoryStore, vectorStore } from "@/utils/openai";
 import { NextResponse } from "next/server";
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { StringOutputParser } from "@langchain/core/output_parsers";
@@ -31,12 +31,14 @@ export async function POST(req: Request) {
       searchKwargs: { fetchK: 10, lambda: 0.25 },
     });
 
-    console.log("in",inMemoryStore)
-    console.log("out",mongoretriever)
+
     const memoryretriver = inMemoryStore.asRetriever({
       searchType: "mmr",
       searchKwargs: { fetchK: 10, lambda: 0.25 },
     });
+
+    console.log("in",memoryretriver)
+    console.log("out",mongoretriever)
 
     const prompt = PromptTemplate.fromTemplate(`
         You are a knowledgeable assistant that provides concise and focused answers based on the provided documents and chat history.
@@ -75,6 +77,7 @@ export async function POST(req: Request) {
       combineDocsChain,
     });
 
+    
    const res= retrievalChain.invoke({
       input: currentMessage,
       chat_history: previousMessages,
