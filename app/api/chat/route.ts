@@ -1,16 +1,12 @@
-'use server'; 
-
 import { LangChainStream } from 'ai';
 import { ChatOpenAI } from "@langchain/openai";
-import { inMemoryStore, vectorStore } from "@/utils/openai";
+import { vectorStore } from "@/utils/openai";
 import { NextResponse } from "next/server";
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { createRetrievalChain } from "langchain/chains/retrieval";
-import dotenv from "dotenv";
 
-dotenv.config();
 export async function POST(req: Request) {
   try {
     const { stream, handlers } = LangChainStream();
@@ -24,24 +20,16 @@ export async function POST(req: Request) {
 
     const llm = new ChatOpenAI({
       modelName: "gpt-3.5-turbo",
-      temperature: 0.5,
+      openAIApiKey: process.env.OPENAI_API_KEY,
+      temperature: 0.5, // Lower temperature for more deterministic output
       streaming: true,
       callbacks: [handlers],
     });
 
-    const mongoretriever = vectorStore().asRetriever({
+    const retriever = vectorStore().asRetriever({
       searchType: "mmr",
       searchKwargs: { fetchK: 10, lambda: 0.25 },
     });
-
-
-    const memoryretriver = inMemoryStore.asRetriever({
-      searchType: "mmr",
-      searchKwargs: { fetchK: 10, lambda: 0.25 },
-    });
-
-    console.log("in",memoryretriver)
-    console.log("out",mongoretriever)
 
     const prompt = PromptTemplate.fromTemplate(`
         You are a knowledgeable assistant that provides concise and focused answers based on the provided documents and chat history.
@@ -76,23 +64,20 @@ export async function POST(req: Request) {
     });
 
     const retrievalChain = await createRetrievalChain({
-      retriever: memoryretriver,
+      retriever: retriever,
       combineDocsChain,
     });
 
-    
-   const res= retrievalChain.invoke({
+    retrievalChain.invoke({
       input: currentMessage,
       chat_history: previousMessages,
     });
 
-    console.log(res)
-
     return new Response(stream, {
+      status: 200,
       headers: {
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        Connection: "keep-alive",
+        "Content-Type": "text/plain; charset=utf-8",
+        "Transfer-Encoding": "chunked",
       },
     });
   } catch (e) {
