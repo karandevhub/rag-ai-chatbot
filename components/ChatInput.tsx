@@ -132,7 +132,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="sticky bottom-0 p-4 bg-transparent">
+    <div className="sticky bottom-0 p-4">
       <div className="container mx-auto max-w-4xl">
         <form ref={formRef} onSubmit={onSubmit}>
           {uploadError && (
@@ -173,7 +173,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
               accept=".pdf,.docx,.pptx"
             />
 
-            <div className="relative w-full">
+            <div className="relative w-full bg-background">
               <Textarea
                 value={input}
                 onChange={handleInputChange}

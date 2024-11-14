@@ -16,7 +16,7 @@ const Header: FC<Props> = ({ clearHistory }) => {
     const isHome = pathname === '/'
 
     return (
-        <header className="sticky top-0 z-10 bg-transparent">
+        <header className="sticky top-0 z-10 bg-background">
             <div className="container mx-auto px-2 py-3 flex items-center">
                 <h1 className="text-xl font-semibold">R.A.G</h1>
                 <div className="ml-auto flex items-center space-x-4">
