@@ -2,8 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useWindowSize } from 'usehooks-ts';
-
 import { ModelSelector } from '@/components/custom/model-selector';
 import { Button } from '@/components/ui/button';
 import { BetterTooltip } from '@/components/ui/tooltip';
@@ -35,14 +33,13 @@ export function ChatHeader({ selectedModelId, onClose}: { selectedModelId?: stri
                 className="order-1 md:order-2"
             />}
             <Button
-                className="bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-zinc-50 dark:text-zinc-900 md:flex py-1.5 px-2 h-fit md:h-[34px] order-4 md:ml-auto"
+                className="bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-zinc-50 dark:text-zinc-900 md:flex md:px-4 px-3  order-4 md:ml-auto"
                 asChild
             >
                 <Link
                     href={isHome ? '/teach' : '/'}
-                    className="inline-flex items-center space-x-2 bg-primary text-primary-foreground px-4 py-1.5 rounded-md hover:bg-primary/90 transition-colors"
                 >
-                    {isHome ? <BrainCircuit size={18} /> : <Bot size={18} />}
+                    {isHome ? <BrainCircuit size={20} /> : <Bot size={20} />}
                     <span>{isHome ? 'Train' : 'Chat'}</span>
                 </Link>
             </Button>

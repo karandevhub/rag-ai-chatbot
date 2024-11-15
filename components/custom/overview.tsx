@@ -28,7 +28,7 @@ export const Overview = () => {
       }}
     >
       <motion.div
-        className="max-w-4xl mx-auto md:mt-12 mt-6 px-4 pb-12"
+        className="max-w-4xl mx-auto md:mt-12 mt-6 px-4 pb-1"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -37,7 +37,7 @@ export const Overview = () => {
           variants={container}
           initial="hidden"
           animate="show"
-          className="space-y-6 md:space-y-8"
+          className="space-y-4 md:space-y-8"
         >
           <motion.div variants={item} className="text-center space-y-4">
             <div className="flex justify-center items-center gap-2 md:gap-4 mb-4 md:mb-6">
@@ -56,10 +56,10 @@ export const Overview = () => {
                 <MessageSquare size={24} className="text-primary md:size-8" />
               </div>
             </div>
-            <h1 className="text-xl md:text-3xl font-bold tracking-tight px-2">
-              R.A.G Assistant
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight px-2">
+              DOCs Assistant
             </h1>
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
+            <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto px-2">
              Ask questions, get insights,
               and explore your content through AI-powered conversations.
             </p>
@@ -68,17 +68,17 @@ export const Overview = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mt-4 md:mt-8">
               {[
                 {
-                  icon: <Upload className="size-5 md:size-6" />,
+                  icon: <Upload className="size-5 md:size-5" />,
                   title: "Easy Upload",
                   description: "Upload your PDFs, DOCXs, or PPTXs files to get started"
                 },
                 {
-                  icon: <MessageSquare className="size-5 md:size-6" />,
+                  icon: <MessageSquare className="size-5 md:size-5" />,
                   title: "Smart Conversations",
                   description: "Ask questions naturally and get context-aware responses"
                 },
                 {
-                  icon: <FileText className="size-5 md:size-6" />,
+                  icon: <FileText className="size-5 md:size-5" />,
                   title: "Deep Understanding",
                   description: "AI analyzes your documents to provide accurate insights"
                 }

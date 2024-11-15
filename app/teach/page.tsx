@@ -57,17 +57,11 @@ export default function Home() {
         }
     };
 
-    const formatFileSize = (size: number) => {
-        if (size < 1024) return `${size} B`;
-        if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
-        return `${(size / (1024 * 1024)).toFixed(1)} MB`;
-    };
 
     return (
         <main className="min-h-screen bg-gray-50/50">
             <ChatHeader />
             <div className="max-w-4xl mx-auto p-2 sm:p-4 space-y-4">
-                {/* Upload Section */}
                 <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
                     <h2 className="text-lg font-medium mb-3 text-gray-800">Upload Document</h2>
                     <div className="max-w-full">
