@@ -19,8 +19,8 @@ const item = {
 
 export const Overview = () => {
   return (
-    <motion.div
-      className="h-full overflow-y-auto scrollbar-hide"
+    <div
+      className="overflow-y-auto scrollbar-hide"
       style={{
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
@@ -65,13 +65,8 @@ export const Overview = () => {
             </p>
           </motion.div>
           <motion.div variants={item}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mt-4 md:mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mt-4 md:mt-8">
               {[
-                {
-                  icon: <Upload className="size-5 md:size-5" />,
-                  title: "Easy Upload",
-                  description: "Upload your PDFs, DOCXs, or PPTXs files to get started"
-                },
                 {
                   icon: <MessageSquare className="size-5 md:size-5" />,
                   title: "Smart Conversations",
@@ -100,7 +95,7 @@ export const Overview = () => {
 
         </motion.div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 };
 
