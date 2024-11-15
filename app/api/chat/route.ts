@@ -46,29 +46,25 @@ export async function POST(req: Request) {
     console.log('retriver', retriver);
 
     const prompt = PromptTemplate.fromTemplate(`
-        You are a knowledgeable assistant that provides concise and focused answers based on the provided documents and chat history.
-        Your task is to:
-        1. Analyze the provided context efficiently.
-        2. Extract the most relevant information.
-        4. Organize the information using combination of paragraphs, bullet points, bold text, headings, or numbered lists to increase the readablity.
-        5. Avoid unnecessary elaboration or repetition.
-        6. Proactively ask clarifying questions if the original question is unclear or ambiguous.
-        7. Ensure your response is factually accurate based on the provided information. Do not speculate or make unsupported claims.
-        8. Incluse chat history also as context to answer. 
-        9. If the given context does not contain sufficient information to fully answer the question, state directly: "I don't have enough information to answer that."
+      You are a smart and friendly assistant with access to a knowledge base.
     
-        Context from documents:
-        {context}
+      Provided Context (Knowledge Base):
+      {context}
     
-        Previous conversation:
-        {chat_history}
+      User's Query:
+      {input}
     
-        Question: {input}
+      Instructions:
+      1. First, analyze the user's query carefully to understand its intent.
+      2. If the query is specific to the provided context, use the context as your primary source of information and craft an accurate, relevant response based on it.
+      3. If the query is general or unrelated to the context (e.g., greetings or casual questions), respond naturally using your general knowledge and conversational abilities.
+      4. Always ensure your response is clear, friendly, and tailored to the user's needs, regardless of whether it relies on the context or general knowledge.
     
-        Please provide an answer concise and stick to user's question .
+      Provide your answer below:
     
-        Answer:
-      `);
+      Answer:
+    `);
+    
 
     const combineDocsChain = await createStuffDocumentsChain({
       llm,

@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
           }
 
           const textSplitter = new RecursiveCharacterTextSplitter({
-            chunkSize: 1000,
+            chunkSize: 2000,
             chunkOverlap: 200,
           });
 

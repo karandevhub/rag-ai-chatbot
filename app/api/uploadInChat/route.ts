@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     const formData: FormData = await req.formData();
     const uploadedFiles = formData.getAll("file");
     console.log(uploadedFiles);
-
+    await inMemoryVectorStore()
     if (uploadedFiles && uploadedFiles.length > 0) {
       for (const uploadedFile of uploadedFiles) {
         if (uploadedFile instanceof File) {
@@ -65,7 +65,6 @@ export async function POST(req: NextRequest) {
 
           const splitDocs = await textSplitter.splitDocuments(docs);
           console.log(splitDocs)
-          await inMemoryVectorStore()
           inMemoryStore.addDocuments(splitDocs);
         } else {
           console.log(
