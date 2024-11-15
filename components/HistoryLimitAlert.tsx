@@ -3,14 +3,18 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Button } from "./ui/button";
 
 const HistoryLimitAlert = ({ onClose }: { onClose: () => void }) => (
-    <Alert variant="destructive" className="absolute left-0 right-0 top-10 mb-4 mx-auto max-w-4xl bg-background">
-      <AlertTriangle className="h-4 w-4" />
+  <div className="absolute inset-x-0 px-2 top-10 mt-3">
+    <Alert
+      variant="destructive"
+      className="mx-auto max-w-4xl bg-background"
+    >
+      <AlertTriangle className="size-4 w-4" />
       <AlertTitle>Memory Full</AlertTitle>
       <AlertDescription className="mt-2">
         <p className="mb-2">
           You&apos;ve reached the maximum chat history limit. Please clear your chat history to continue the conversation.
         </p>
-        <Button 
+        <Button
           variant="destructive"
           onClick={onClose}
           className="mt-2"
@@ -19,6 +23,7 @@ const HistoryLimitAlert = ({ onClose }: { onClose: () => void }) => (
         </Button>
       </AlertDescription>
     </Alert>
-  );
+  </div>
+);
 
-  export default HistoryLimitAlert
+export default HistoryLimitAlert;

@@ -64,6 +64,7 @@ export async function POST(req: NextRequest) {
           });
 
           const splitDocs = await textSplitter.splitDocuments(docs);
+          console.log(splitDocs)
           await inMemoryVectorStore()
           inMemoryStore.addDocuments(splitDocs);
         } else {

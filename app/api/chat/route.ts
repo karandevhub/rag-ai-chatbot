@@ -1,13 +1,16 @@
-"use server";
-import "../../../envConfig";
-import { LangChainStream } from "ai";
-import { ChatOpenAI } from "@langchain/openai";
-import { inMemoryStore, vectorStore } from "@/utils/openai";
-import { NextResponse } from "next/server";
-import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
-import { StringOutputParser } from "@langchain/core/output_parsers";
-import { PromptTemplate } from "@langchain/core/prompts";
-import { createRetrievalChain } from "langchain/chains/retrieval";
+'use server';
+
+import '../../../envConfig';
+
+import { LangChainStream } from 'ai';
+import { NextResponse } from 'next/server';
+import { inMemoryStore, vectorStore } from '@/utils/openai';
+
+import { ChatOpenAI } from '@langchain/openai';
+import { createStuffDocumentsChain } from 'langchain/chains/combine_documents';
+import { StringOutputParser } from '@langchain/core/output_parsers';
+import { PromptTemplate } from '@langchain/core/prompts';
+import { createRetrievalChain } from 'langchain/chains/retrieval';
 
 export async function POST(req: Request) {
   try {
@@ -19,27 +22,28 @@ export async function POST(req: Request) {
       role: msg.role,
       content: msg.content,
     }));
-    console.log("stored file", storedFile);
+    console.log('stored file', storedFile);
     const llm = new ChatOpenAI({
-      modelName: "gpt-3.5-turbo",
-      openAIApiKey: process.env.OPENAI_API_KEY ?? "xyzassdklfdskjsdsnmfbd",
+      modelName: 'gpt-3.5-turbo',
+      openAIApiKey: process.env.OPENAI_API_KEY ?? 'xyzassdklfdskjsdsnmfbd',
       temperature: 0.5,
       streaming: true,
       callbacks: [handlers],
     });
 
     const mongoretriever = vectorStore().asRetriever({
-      searchType: "mmr",
+      searchType: 'mmr',
       searchKwargs: { fetchK: 10, lambda: 0.25 },
     });
 
     const memoryretriver = inMemoryStore.asRetriever({
-      searchType: "mmr",
+      searchType: 'mmr',
       searchKwargs: { fetchK: 10, lambda: 0.25 },
     });
 
-    console.log("in", memoryretriver);
-    console.log("out", mongoretriever);
+    const retriver = storedFile ? memoryretriver : mongoretriever;
+
+    console.log('retriver', retriver);
 
     const prompt = PromptTemplate.fromTemplate(`
         You are a knowledgeable assistant that provides concise and focused answers based on the provided documents and chat history.
@@ -70,11 +74,11 @@ export async function POST(req: Request) {
       llm,
       prompt,
       outputParser: new StringOutputParser(),
-      documentSeparator: "\n",
+      documentSeparator: '\n',
     });
 
     const retrievalChain = await createRetrievalChain({
-      retriever: storedFile ? memoryretriver : mongoretriever,
+      retriever: retriver,
       combineDocsChain,
     });
 
@@ -87,12 +91,12 @@ export async function POST(req: Request) {
 
     return new Response(stream, {
       headers: {
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        Connection: "keep-alive",
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive',
       },
     });
   } catch (e) {
-    return NextResponse.json({ message: "Error Processing" }, { status: 500 });
+    return NextResponse.json({ message: 'Error Processing' }, { status: 500 });
   }
 }

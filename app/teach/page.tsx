@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 import { FilePond } from 'react-filepond';
 import 'filepond/dist/filepond.min.css';
-import { Trash2 } from 'lucide-react';
-import Header from '@/components/Header';
+import { Trash2, FileIcon } from 'lucide-react';
+
 import { getFileIcon } from '@/lib/utils';
+import { ChatHeader } from '@/components/Header';
 
 interface FileInfo {
     name: string;
@@ -13,7 +14,6 @@ interface FileInfo {
     size: number;
     lastModified: string;
 }
-
 
 export default function Home() {
     const [files, setFiles] = useState<FileInfo[]>([]);
@@ -26,7 +26,6 @@ export default function Home() {
             const response = await fetch('/api/files');
             if (!response.ok) throw new Error('Failed to fetch files');
             const fileInfos: FileInfo[] = await response.json();
-            setFiles(fileInfos);
             setFiles(fileInfos);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to load files');
@@ -58,60 +57,69 @@ export default function Home() {
         }
     };
 
+    const formatFileSize = (size: number) => {
+        if (size < 1024) return `${size} B`;
+        if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+        return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+    };
 
-    console.log(files)
     return (
-        <main className="min-h-screen bg-gray-50">
-                <Header />
-            <div className="max-w-4xl mx-auto p-2">
-                <div className="bg-white rounded-lg shadow p-6 mb-6">
-                    <h2 className="text-xl font-semibold mb-4">Upload Document</h2>
-                    <FilePond
-                        allowMultiple={false}
-                        credits={false}
-                        server={{
-                            process: {
-                                url: "/api/upload",
-                                onload: (response: any) => {
-                                    fetchFiles();
-
-                                    return response.key || 'uploaded';
+        <main className="min-h-screen bg-gray-50/50">
+            <ChatHeader />
+            <div className="max-w-4xl mx-auto p-2 sm:p-4 space-y-4">
+                {/* Upload Section */}
+                <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+                    <h2 className="text-lg font-medium mb-3 text-gray-800">Upload Document</h2>
+                    <div className="max-w-full">
+                        <FilePond
+                            allowMultiple={false}
+                            credits={false}
+                            className="text-sm"
+                            labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
+                            server={{
+                                process: {
+                                    url: "/api/upload",
+                                    onload: (response: any) => {
+                                        fetchFiles();
+                                        return response.key || 'uploaded';
+                                    },
+                                    onerror: async (response: any) => {
+                                        const data = await JSON.parse(response);
+                                        setError('Failed to upload file');
+                                        return data?.message || 'Upload failed';
+                                    }
                                 },
-                                onerror: async (response: any) => {
-                                    const data = await JSON.parse(response)
-                                    setError('Failed to upload file');
-
-                                    return data?.message || 'Upload failed';
-                                }
-                            },
-                            revert: null,
-                            restore: null,
-                            load: null,
-                            fetch: null
-                        }}
-                        onwarning={(error) => setError(error.body)}
-                        onerror={(error) => setError(error.body)}
-                    />
+                                revert: null,
+                                restore: null,
+                                load: null,
+                                fetch: null
+                            }}
+                            onwarning={(error) => setError(error.body)}
+                            onerror={(error) => setError(error.body)}
+                        />
+                    </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow p-6">
-                    <h2 className="text-xl font-semibold mb-4">Uploaded Documents</h2>
+                {/* Documents List Section */}
+                <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+                    <h2 className="text-lg font-medium mb-3 text-gray-800">Uploaded Documents</h2>
 
                     {loading && (
-                        <div className="text-center py-4">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+                        <div className="flex justify-center py-8">
+                            <div className="animate-spin rounded-full size-6 border-2 border-gray-900 border-t-transparent"></div>
                         </div>
                     )}
 
                     {error && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-2.5 rounded-lg mb-4">
                             {error}
                         </div>
                     )}
 
                     {!loading && !error && files.length === 0 && (
-                        <div className="text-center py-4 text-gray-500">
-                            No documents uploaded yet
+                        <div className="flex flex-col items-center justify-center py-8 text-gray-500 bg-gray-50/50 rounded-lg border-2 border-dashed">
+                            <FileIcon className="size-8 text-gray-400 mb-2" />
+                            <p className="text-sm">No documents uploaded yet</p>
                         </div>
                     )}
 
@@ -119,28 +127,27 @@ export default function Home() {
                         {files.map((file) => (
                             <div
                                 key={file.name}
-                                className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg border"
+                                className="flex items-center justify-between p-3 hover:bg-gray-50/80 rounded-lg border border-gray-100 transition-colors duration-150 group"
                             >
-                                
-                                <div className="flex items-center space-x-3">
-                                    <span className="text-2xl">{getFileIcon(file.type)}</span>
-                                 
-                                    <div>
-                                        <p className="font-medium">{file.name}</p>
+                                <div className="flex items-center space-x-3 min-w-0">
+                                    <span className="text-xl shrink-0">{getFileIcon(file.type)}</span>
+                                    <div className="min-w-0">
+                                        <p className="font-medium text-sm text-gray-900 truncate">{file.name}</p>
+
                                     </div>
                                 </div>
 
                                 {deletingFile === file.name ? (
-                                    <div className="p-2 rounded-full transition-colors">
-                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900"></div>
+                                    <div className="p-1.5">
+                                        <div className="animate-spin size-4 border-2 border-gray-900 border-t-transparent rounded-full"></div>
                                     </div>
                                 ) : (
                                     <button
                                         onClick={() => handleDelete(file.name)}
-                                        className="p-2 hover:bg-red-100 rounded-full transition-colors"
+                                        className="p-1.5 hover:bg-red-50 rounded-full transition-colors"
                                         title="Delete file"
                                     >
-                                        <Trash2 className="w-5 h-5 text-red-600" />
+                                        <Trash2 className="size-4 text-red-500" />
                                     </button>
                                 )}
                             </div>
