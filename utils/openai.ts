@@ -4,9 +4,8 @@ import {
   MongoDBAtlasVectorSearchLibArgs,
 } from "@langchain/mongodb";
 import { MongoClient } from "mongodb";
-import dotenv from "dotenv";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
-dotenv.config();
+
 
 let embeddingsInstance: OpenAIEmbeddings | null = null;
 
