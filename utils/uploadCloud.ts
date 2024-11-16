@@ -1,5 +1,4 @@
 import { Storage } from '@google-cloud/storage';
-import { File } from 'buffer';
 import { format } from 'date-fns';
 import credentials from './credentials';
 

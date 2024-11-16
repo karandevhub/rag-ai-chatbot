@@ -6,22 +6,23 @@ import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf';
 import { DocxLoader } from '@langchain/community/document_loaders/fs/docx';
 import { PPTXLoader } from '@langchain/community/document_loaders/fs/pptx';
 import uploadToGCS, { bucket } from '@/utils/uploadCloud';
-import { File } from 'buffer';
 
 export async function POST(req: NextRequest) {
   try {
     const formData: FormData = await req.formData();
     const uploadedFiles = formData.getAll('filepond');
     const results = [];
-
+    console.log("ups",uploadedFiles)
     if (!uploadedFiles || uploadedFiles.length === 0) {
       return NextResponse.json({ message: 'No files found' }, { status: 400 });
     }
 
+
     for (const uploadedFile of uploadedFiles) {
+      console.log("up",uploadedFile)
       if (!(uploadedFile instanceof File)) {
         console.log('Skipping invalid file format');
-        continue;
+        continue
       }
 
       try {

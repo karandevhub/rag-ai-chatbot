@@ -10,8 +10,6 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "1.0.0-canary.3",
-    "@beam-australia/react-env": "^3.1.1",
-    "@google-cloud/secret-manager": "^5.6.0",
     "@google-cloud/storage": "^7.14.0",
     "@langchain/community": "^0.3.12",
     "@langchain/core": "^0.3.17",
