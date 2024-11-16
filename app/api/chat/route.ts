@@ -80,12 +80,11 @@ export async function POST(req: Request) {
       combineDocsChain,
     });
 
-    const res = await retrievalChain.invoke({
+   retrievalChain.invoke({
       input: currentMessage,
       chat_history: previousMessages,
     });
 
-    console.log("my res",res.context[0].metadata);
 
     return new Response(stream, {
       headers: {
