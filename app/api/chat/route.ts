@@ -60,7 +60,7 @@ export async function POST(req: Request) {
       2. If the query is specific to the provided context, use the context as your primary source of information and craft an accurate, relevant response based on it.
       3. If the query is general or unrelated to the context (e.g., greetings or casual questions), respond naturally using your general knowledge and conversational abilities.
       4. Always ensure your response is clear, friendly, and tailored to the user's needs, regardless of whether it relies on the context or general knowledge.
-      5. If you use the provided context to answer user's questions and if URL of document is present, end your response with [document_name](document_url).
+      5. If you use the provided context to answer user's questions and if URL of document is present, end your response with for more detail refer [document_name](document_url).
 
          
       Provide your answer below:
