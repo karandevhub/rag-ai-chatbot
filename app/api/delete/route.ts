@@ -21,10 +21,9 @@ export async function DELETE(request: NextRequest) {
 
 async function deleteFile(url: string): Promise<void> {
   try {
-    console.log(`Deleted file ${url}`);
     const file = bucket.file(url);
     await file.delete();
-   
+    console.log(`Deleted file ${url}`);
   } catch (error) {
     console.error(`Error deleting file ${url}:`, error);
     throw error;
