@@ -1,32 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
-import dotenv from "dotenv";
 import {  collection } from "@/utils/openai";
 
-
-dotenv.config();
 
 export async function GET(request: NextRequest) {
   try {
     const documents = await collection
-      .aggregate([
-        {
-          $group: {
-            _id: {
-              fileName: "$fileName",
-              type: "$type",
-            },
-            count: { $sum: 1 },
-          },
-        },
-        {
-          $project: {
-            name: "$_id.fileName",
-            type: "$_id.type",
-            _id: 0,
-          },
-        },
-      ])
-      .toArray();
+    .aggregate([
+      {
+        $group: {
+          _id: "$url",
+          fileName: { $first: "$fileName" },
+          type: { $first: "$type" },
+          url: { $first: "$url" }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          name: "$fileName",
+          type: "$type",
+          url: "$url"
+        }
+      },
+    ])
+    .toArray();
 
     return NextResponse.json(documents);
   } catch (err) {

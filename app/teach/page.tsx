@@ -11,8 +11,7 @@ import { ChatHeader } from '@/components/Header';
 interface FileInfo {
     name: string;
     type: string;
-    size: number;
-    lastModified: string;
+    url: string;
 }
 
 export default function Home() {
@@ -46,7 +45,7 @@ export default function Home() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ fileName: filename }),
+                body: JSON.stringify({ url: filename }),
             });
             if (!response.ok) throw new Error('Failed to delete file');
             fetchFiles();
@@ -131,13 +130,13 @@ export default function Home() {
                                     </div>
                                 </div>
 
-                                {deletingFile === file.name ? (
+                                {deletingFile === file.url ? (
                                     <div className="p-1.5">
                                         <div className="animate-spin size-4 border-2 border-gray-900 border-t-transparent rounded-full"></div>
                                     </div>
                                 ) : (
                                     <button
-                                        onClick={() => handleDelete(file.name)}
+                                        onClick={() => handleDelete(file.url)}
                                         className="p-1.5 hover:bg-red-50 rounded-full transition-colors"
                                         title="Delete file"
                                     >

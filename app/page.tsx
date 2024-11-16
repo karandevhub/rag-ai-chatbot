@@ -135,7 +135,7 @@ export default function Chat() {
             className="shrink-0 min-w-[24px] min-h-[24px]"
           />
         </div>
-        <form className="bottom-2 left-0 right-0 mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
+        <form className="bottom-2 inset-x-0 mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
           <MultimodalInput
             input={input}
             setInput={setInput}
