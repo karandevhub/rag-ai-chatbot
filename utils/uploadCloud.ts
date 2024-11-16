@@ -17,32 +17,28 @@ async function uploadToGCS(file: File): Promise<string> {
   const blob = bucket.file(filename);
 
   try {
-    const buffer = await file.arrayBuffer();
+    // Get the buffer first
+    const buffer = Buffer.from(await file.arrayBuffer());
     
-    await new Promise((resolve, reject) => {
-      const blobStream = blob.createWriteStream({
-        resumable: false,
-        metadata: {
-          contentType: file.type,
-        },
-      });
-
-      blobStream
-        .on('error', (error) => {
-          blobStream.destroy();
-          reject(error);
-        })
-        .on('finish', () => {
-          resolve(true);
-        });
-      blobStream.end(Buffer.from(buffer));
+    // Upload using the upload method instead of streams
+    await blob.save(buffer, {
+      contentType: file.type,
+      metadata: {
+        contentType: file.type,
+      },
     });
+
+    // Make the file public after successful upload
     await blob.makePublic();
     
     return filename;
   } catch (error) {
     console.error('Error uploading to GCS:', error);
-    throw new Error(`Failed to upload file to GCS: ${error}`);
+    if (error instanceof Error) {
+      throw new Error(`Failed to upload file to GCS: ${error.message}`);
+    } else {
+      throw new Error('Failed to upload file to GCS: Unknown error');
+    }
   }
 }
 
