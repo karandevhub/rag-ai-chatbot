@@ -14,6 +14,4 @@ const credentials = {
 };
 
 
-console.log(credentials)
-
 export default credentials;

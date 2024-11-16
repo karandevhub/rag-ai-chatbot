@@ -109,7 +109,7 @@ async function processFile(uploadedFile: File) {
     const splitDocs = await textSplitter.splitDocuments(docs);
 
     const chunksWithMetadata = splitDocs.map((doc) => ({
-      pageContent: `${doc.pageContent}\n\nDocument URL: https://storage.googleapis.com/${bucket.name}/${gcsUrl}`,
+      pageContent: `${doc.pageContent}\n\nDocument URL: https://storage.googleapis.com/${bucket.name}/${gcsUrl}\n\nDocument name:${uploadedFile.name.replace(/\.[^/.]+$/, '')}`,
       metadata: {
         fileName: uploadedFile.name,
         type: uploadedFile.type,

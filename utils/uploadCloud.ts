@@ -4,7 +4,7 @@ import credentials from './credentials';
 import { File } from 'buffer';
 
 const storage = new Storage({
-  projectId: 'quantum-device-433015-v5',
+  projectId: process.env.GOOGLE_CLOUD_PROJECT,
   credentials: credentials,
 });
 
