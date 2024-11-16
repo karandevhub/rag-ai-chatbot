@@ -12,95 +12,104 @@ export async function POST(req: NextRequest) {
   try {
     const formData: FormData = await req.formData();
     const uploadedFiles = formData.getAll('filepond');
+    const results = [];
 
-    if (uploadedFiles && uploadedFiles.length > 0) {
-      for (const uploadedFile of uploadedFiles) {
-        if (uploadedFile instanceof File) {
-          const fileBlob = new Blob([await uploadedFile.arrayBuffer()], {
-            type: uploadedFile.type,
-          });
-          console.log('type', uploadedFile.type);
-          let loader;
-          let docs;
-          switch (uploadedFile.type) {
-            case 'application/pdf':
-              loader = new PDFLoader(fileBlob, {
-                splitPages: false,
-              });
-              docs = await loader.load();
-              break;
-            case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-              loader = new DocxLoader(fileBlob);
-              docs = await loader.load();
-              break;
-            case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
-              loader = new PPTXLoader(fileBlob);
-              docs = await loader.load();
-              break;
-            default:
-              console.log(
-                `Unsupported file type: ${uploadedFile.type}. Skipping this file.`
-              );
-              return NextResponse.json(
-                {
-                  message: `Unsupported file type: ${uploadedFile.type}. Skipping this file.`,
-                },
-                { status: 400 }
-              );
-          }
+    if (!uploadedFiles || uploadedFiles.length === 0) {
+      return NextResponse.json({ message: 'No files found' }, { status: 400 });
+    }
 
-          if (docs.length === 0) {
-            return NextResponse.json(
-              { message: 'No text content found in the PDF file.' },
-              { status: 400 }
-            );
-          }
-
-          const gcsUrl = await uploadToGCS(uploadedFile);
-
-          console.log('url', gcsUrl);
-          const textSplitter = new RecursiveCharacterTextSplitter({
-            chunkSize: 2000,
-            chunkOverlap: 200,
-          });
-
-          const splitDocs = await textSplitter.splitDocuments(docs);
-
-          const chunksWithMetadata = splitDocs.map((doc) => {
-            return {
-              pageContent: `${doc.pageContent}\n\nDocument URL: https://storage.googleapis.com/${bucket.name}/${gcsUrl}`,
-              metadata: {
-                fileName: uploadedFile.name,
-                type: uploadedFile.type,
-                url: gcsUrl,
-              },
-            };
-          });
-
-          await MongoDBAtlasVectorSearch.fromDocuments(
-            chunksWithMetadata,
-            getEmbeddingsTransformer(),
-            searchArgs()
-          );
-        } else {
-          console.log(
-            'Uploaded file is not in the expected format. Skipping this file.'
-          );
-        }
+    for (const uploadedFile of uploadedFiles) {
+      if (!(uploadedFile instanceof File)) {
+        console.log('Skipping invalid file format');
+        continue;
       }
 
-      return NextResponse.json(
-        { message: 'All uploaded files processed successfully' },
-        { status: 200 }
-      );
-    } else {
-      console.log('No files found.');
-      return NextResponse.json({ message: 'No files found' }, { status: 500 });
+      try {
+        const result = await processFile(uploadedFile);
+        results.push(result);
+      } catch (error) {
+        console.error(`Error processing file ${uploadedFile.name}:`, error);
+        results.push({
+          fileName: uploadedFile.name,
+          status: 'error',
+          message: error
+        });
+      }
     }
+
+    return NextResponse.json({
+      message: 'Files processed',
+      results
+    }, { status: 200 });
+
   } catch (error) {
     console.error('Error processing request:', error);
-    return new NextResponse('An error occurred during processing.', {
-      status: 500,
-    });
+    return NextResponse.json({
+      message: 'An error occurred during processing',
+      error: error
+    }, { status: 500 });
   }
+}
+
+async function processFile(uploadedFile: File) {
+  const fileBlob = new Blob([await uploadedFile.arrayBuffer()], {
+    type: uploadedFile.type,
+  });
+
+  let loader;
+  let docs;
+
+  // Validate file type and load document
+  switch (uploadedFile.type) {
+    case 'application/pdf':
+      loader = new PDFLoader(fileBlob, { splitPages: false });
+      break;
+    case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+      loader = new DocxLoader(fileBlob);
+      break;
+    case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+      loader = new PPTXLoader(fileBlob);
+      break;
+    default:
+      throw new Error(`Unsupported file type: ${uploadedFile.type}`);
+  }
+
+  docs = await loader.load();
+
+  if (docs.length === 0) {
+    throw new Error('No text content found in the file.');
+  }
+
+  // Upload to GCS
+  const gcsUrl = await uploadToGCS(uploadedFile);
+
+  // Process documents
+  const textSplitter = new RecursiveCharacterTextSplitter({
+    chunkSize: 2000,
+    chunkOverlap: 200,
+  });
+
+  const splitDocs = await textSplitter.splitDocuments(docs);
+
+  const chunksWithMetadata = splitDocs.map((doc) => ({
+    pageContent: `${doc.pageContent}\n\nDocument URL: https://storage.googleapis.com/${bucket.name}/${gcsUrl}`,
+    metadata: {
+      fileName: uploadedFile.name,
+      type: uploadedFile.type,
+      url: gcsUrl,
+    },
+  }));
+
+  // Store in vector database
+  await MongoDBAtlasVectorSearch.fromDocuments(
+    chunksWithMetadata,
+    getEmbeddingsTransformer(),
+    searchArgs()
+  );
+
+  return {
+    fileName: uploadedFile.name,
+    status: 'success',
+    url: gcsUrl
+  };
 }

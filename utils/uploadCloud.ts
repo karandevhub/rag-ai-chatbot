@@ -14,26 +14,36 @@ async function uploadToGCS(file: File): Promise<string> {
   const timestamp = format(new Date(), 'yyyyMMdd-HHmmss');
   const cleanFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '-');
   const filename = `${timestamp}-${cleanFileName}`;
-
   const blob = bucket.file(filename);
-  const blobStream = blob.createWriteStream({
-    resumable: false,
-    metadata: {
-      contentType: file.type,
-    },
-  });
 
-  const buffer = await file.arrayBuffer();
+  try {
+    const buffer = await file.arrayBuffer();
+    
+    await new Promise((resolve, reject) => {
+      const blobStream = blob.createWriteStream({
+        resumable: false,
+        metadata: {
+          contentType: file.type,
+        },
+      });
 
-  return new Promise((resolve, reject) => {
-    blobStream.on('error', (error) => reject(error));
-    blobStream.on('finish', async () => {
-      await blob.makePublic();
-      resolve(filename);
+      blobStream
+        .on('error', (error) => {
+          blobStream.destroy();
+          reject(error);
+        })
+        .on('finish', () => {
+          resolve(true);
+        });
+      blobStream.end(Buffer.from(buffer));
     });
-
-    blobStream.end(Buffer.from(buffer));
-  });
+    await blob.makePublic();
+    
+    return filename;
+  } catch (error) {
+    console.error('Error uploading to GCS:', error);
+    throw new Error(`Failed to upload file to GCS: ${error}`);
+  }
 }
 
 export default uploadToGCS;
