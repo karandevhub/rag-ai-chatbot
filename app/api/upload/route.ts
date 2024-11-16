@@ -6,6 +6,7 @@ import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf';
 import { DocxLoader } from '@langchain/community/document_loaders/fs/docx';
 import { PPTXLoader } from '@langchain/community/document_loaders/fs/pptx';
 import uploadToGCS, { bucket } from '@/utils/uploadCloud';
+import { File } from 'buffer';
 
 export async function POST(req: NextRequest) {
   try {

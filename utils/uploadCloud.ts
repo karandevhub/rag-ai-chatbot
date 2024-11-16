@@ -1,6 +1,7 @@
 import { Storage } from '@google-cloud/storage';
 import { format } from 'date-fns';
 import credentials from './credentials';
+import { File } from 'buffer';
 
 const storage = new Storage({
   projectId: 'quantum-device-433015-v5',
