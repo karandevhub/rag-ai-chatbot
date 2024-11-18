@@ -19,18 +19,12 @@ export default async function RootLayout({
 }>) {
 
 
-  const cookieStore = await cookies();
-  const isCollapsed = cookieStore.get('sidebar:state')?.value !== 'true';
-  
   return (
     <html lang="en">
       <body className={inter.className}>
-      <SidebarProvider defaultOpen={!isCollapsed}>
-        <AppSidebar />
-        <SidebarInset>
+
           {children}
-        </SidebarInset>
-      </SidebarProvider>
+
       </body>
     </html>
   );
