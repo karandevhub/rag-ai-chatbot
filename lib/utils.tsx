@@ -8,7 +8,7 @@ import {
 import { clsx, type ClassValue } from 'clsx';
 import { FileChartColumn, FileText, TextSearch } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
-
+import Cookies from 'js-cookie'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -44,6 +44,9 @@ export function getLocalStorage(key: string) {
 }
 
 
+export function saveModelId(model: string) {
+  localStorage.setItem('model-id', model)
+}
 
 
 export function sanitizeResponseMessages(

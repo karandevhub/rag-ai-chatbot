@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       content: msg.content,
     }));
 
-    console.log("prev",previousMessages);
+    console.log("prev",selectedModelId);
     let llm;
     switch (selectedModelId) {
       case 'gpt-3.5-turbo':

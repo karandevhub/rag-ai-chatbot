@@ -12,10 +12,8 @@ import { useWindowSize } from 'usehooks-ts';
 import { useSidebar } from './sidebar';
 
 export function ChatHeader({
-    selectedModelId,
     clearHistory,
 }: {
-    selectedModelId?: string;
     clearHistory?: () => void;
 }) {
     const pathname = usePathname();
@@ -41,7 +39,6 @@ export function ChatHeader({
 
             {isHome && (
                 <ModelSelector
-                    selectedModelId={selectedModelId}
                     className="order-1 md:order-2"
                 />
             )}

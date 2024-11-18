@@ -14,11 +14,7 @@ const HISTORY_LIMIT = 100;
 
 
 
-export default function Chat({
-  selectedModelId,
-}: {
-  selectedModelId: string;
-}) {
+export default function Chat() {
   const [isClient, setIsClient] = useState(false);
   const [showHistoryAlert, setShowHistoryAlert] = useState(false);
 
@@ -41,7 +37,9 @@ export default function Chat({
   };
 
   let storedFile: any
+  let selectedModelId: any
   if (typeof window !== "undefined") {
+    selectedModelId = window?.localStorage.getItem('model-id');
     storedFile = window?.localStorage.getItem("uploadedFile");
   }
 
@@ -110,7 +108,7 @@ export default function Chat({
   return (
     <>
       <div className="flex flex-col min-w-0 h-dvh bg-background">
-        <ChatHeader clearHistory={clearHistory} selectedModelId={selectedModelId} />
+        <ChatHeader clearHistory={clearHistory} />
         {showHistoryAlert && (
           <div className="p-4">
             <HistoryLimitAlert clearHistory={clearHistory} />

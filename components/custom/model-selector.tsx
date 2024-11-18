@@ -1,9 +1,8 @@
 'use client';
 
-import { startTransition, useMemo, useOptimistic, useState } from 'react';
+import { startTransition, useMemo, useState, useEffect } from 'react';
 
-import { models } from '@/ai/models';
-import { saveModelId } from '@/app/actions';
+import { DEFAULT_MODEL_NAME, models } from '@/ai/models';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -14,22 +13,27 @@ import {
 import { cn } from '@/lib/utils';
 import { CheckCirclFillIcon, ChevronDownIcon } from './icons';
 
-
-
-export function ModelSelector({
-  selectedModelId,
-  className,
-}: {
-  selectedModelId?: string;
-} & React.ComponentProps<typeof Button>) {
+export function ModelSelector({ className }: React.ComponentProps<typeof Button>) {
+  const [selectedModelId, setSelectedModelId] = useState(DEFAULT_MODEL_NAME);
   const [open, setOpen] = useState(false);
-  const [optimisticModelId, setOptimisticModelId] =
-    useOptimistic(selectedModelId);
+
+  useEffect(() => {
+    const storedModelId = localStorage.getItem('model-id') || DEFAULT_MODEL_NAME;
+    setSelectedModelId(storedModelId);
+  }, []);
 
   const selectModel = useMemo(
-    () => models.find((model) => model.id === optimisticModelId),
-    [optimisticModelId]
+    () => models.find((model) => model.id === selectedModelId),
+    [selectedModelId]
   );
+
+  const handleModelSelect = (modelId: string) => {
+    startTransition(() => {
+      localStorage.setItem('model-id', modelId);
+      setSelectedModelId(modelId);
+      setOpen(false);
+    });
+  };
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -49,16 +53,9 @@ export function ModelSelector({
         {models.map((model) => (
           <DropdownMenuItem
             key={model.id}
-            onSelect={() => {
-              setOpen(false);
-
-              startTransition(() => {
-                setOptimisticModelId(model.id);
-                saveModelId(model.id);
-              });
-            }}
+            onSelect={() => handleModelSelect(model.id)}
             className="gap-4 group/item flex flex-row justify-between items-center"
-            data-active={model.id === optimisticModelId}
+            data-active={model.id === selectedModelId}
           >
             <div className="flex flex-col gap-1 items-start">
               {model.label}
