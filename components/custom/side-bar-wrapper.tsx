@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { SidebarInset, SidebarProvider } from "../sidebar";
 import { AppSidebar } from "./app-sidebar";
 
