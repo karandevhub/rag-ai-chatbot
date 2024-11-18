@@ -2,7 +2,7 @@ import { AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Button } from "./ui/button";
 
-const HistoryLimitAlert = ({ onClose }: { onClose: () => void }) => (
+const HistoryLimitAlert = ({ clearHistory }: { clearHistory: () => void }) => (
   <div className="absolute inset-x-0 px-2 top-10 mt-3">
     <Alert
       variant="destructive"
@@ -16,7 +16,7 @@ const HistoryLimitAlert = ({ onClose }: { onClose: () => void }) => (
         </p>
         <Button
           variant="destructive"
-          onClick={onClose}
+          onClick={clearHistory}
           className="mt-2"
         >
           Clear History

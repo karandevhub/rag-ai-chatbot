@@ -110,10 +110,10 @@ export default function Chat({
   return (
     <>
       <div className="flex flex-col min-w-0 h-dvh bg-background">
-        <ChatHeader onClose={clearHistory} selectedModelId={selectedModelId} />
+        <ChatHeader clearHistory={clearHistory} selectedModelId={selectedModelId} />
         {showHistoryAlert && (
           <div className="p-4">
-            <HistoryLimitAlert onClose={clearHistory} />
+            <HistoryLimitAlert clearHistory={clearHistory} />
           </div>
         )}
         <div
