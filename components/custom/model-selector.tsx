@@ -45,7 +45,7 @@ export function ModelSelector({ className }: React.ComponentProps<typeof Button>
         )}
       >
         <Button variant="outline" className="md:px-2 md:h-[34px]">
-          {selectModel?.label}
+          {selectModel?.label.split(' ')[0]}
           <ChevronDownIcon />
         </Button>
       </DropdownMenuTrigger>

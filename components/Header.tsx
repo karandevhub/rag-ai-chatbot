@@ -43,7 +43,7 @@ export function ChatHeader({
                 />
             )}
             <Button
-                className="bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-zinc-50 dark:text-zinc-900 md:flex md:px-4 px-3 order-4 md:ml-auto"
+                className="bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-zinc-50 dark:text-zinc-900 md:flex md:px-3 px-3 order-4 md:ml-auto"
                 asChild
             >
                 <Link href={isHome ? '/teach' : '/'}>
