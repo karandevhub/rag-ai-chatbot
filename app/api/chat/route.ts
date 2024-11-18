@@ -11,26 +11,45 @@ import { createStuffDocumentsChain } from 'langchain/chains/combine_documents';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { createRetrievalChain } from 'langchain/chains/retrieval';
-
+import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 
 export async function POST(req: Request) {
   try {
     const { stream, handlers } = LangChainStream();
-    const { messages, storedFile } = await req.json();
+    const { messages, storedFile, selectedModelId } = await req.json();
     console.log(messages);
     const currentMessage = messages[messages.length - 1].content;
-    const previousMessages = messages.slice(0, -1).map((msg: any) => ({
+    const previousMessages = messages.slice(-6, -1).map((msg: any) => ({
       role: msg.role,
       content: msg.content,
     }));
-    console.log('stored file', storedFile);
-    const llm = new ChatOpenAI({
-      modelName: 'gpt-3.5-turbo',
-      openAIApiKey: process.env.OPENAI_API_KEY ?? 'xyzassdklfdskjsdsnmfbd',
-      temperature: 0.5,
-      streaming: true,
-      callbacks: [handlers],
-    });
+
+    console.log("prev",previousMessages);
+    let llm;
+    switch (selectedModelId) {
+      case 'gpt-3.5-turbo':
+        llm = new ChatOpenAI({
+          modelName: 'gpt-3.5-turbo',
+          openAIApiKey: process.env.OPENAI_API_KEY ?? 'xyzassdklfdskjsdsnmfbd',
+          temperature: 0.5,
+          streaming: true,
+          callbacks: [handlers],
+        });
+        break;
+      case 'gemini-1.5-flash':
+        llm = new ChatGoogleGenerativeAI({
+          model: 'gemini-1.5-flash',
+          apiKey: process.env.GOOGLE_API_KEY ?? 'xyzassdklfdskjsdsnmfbd',
+          streaming: true,
+          callbacks: [handlers],
+        });
+        break;
+      default:
+        return NextResponse.json(
+          { message: 'Invalid model ID' },
+          { status: 400 }
+        );
+    }
 
     const mongoretriever = vectorStore().asRetriever({
       searchType: 'mmr',
@@ -51,6 +70,9 @@ export async function POST(req: Request) {
     
       Provided Context (Knowledge Base):
       {context}
+
+      Chat history:
+      {chat_history}
     
       User's Query:
       {input}
@@ -69,7 +91,7 @@ export async function POST(req: Request) {
     `);
 
     const combineDocsChain = await createStuffDocumentsChain({
-      llm,
+      llm: llm,
       prompt,
       outputParser: new StringOutputParser(),
       documentSeparator: '\n',
@@ -80,11 +102,10 @@ export async function POST(req: Request) {
       combineDocsChain,
     });
 
-   retrievalChain.invoke({
+    retrievalChain.invoke({
       input: currentMessage,
       chat_history: previousMessages,
     });
-
 
     return new Response(stream, {
       headers: {
