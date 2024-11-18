@@ -1,4 +1,4 @@
-import { cookies } from 'next/headers';
+
 import { DEFAULT_MODEL_NAME, models } from '@/ai/models';
 import Chat from '../components/Chat';
 
