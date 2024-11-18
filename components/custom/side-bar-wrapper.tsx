@@ -7,10 +7,9 @@ export default async function SideBarWrapper({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const cookieStore = await cookies();
-    const isCollapsed = cookieStore.get('sidebar:state')?.value !== 'true';
+    const isCollapsed = false
     return (
-        <SidebarProvider defaultOpen={!isCollapsed}>
+        <SidebarProvider defaultOpen={isCollapsed}>
             <AppSidebar />
             <SidebarInset>
                 {children}
