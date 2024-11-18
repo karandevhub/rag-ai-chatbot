@@ -1,14 +1,13 @@
-import { cookies } from "next/headers";
+"use client"
 import { SidebarInset, SidebarProvider } from "../sidebar";
 import { AppSidebar } from "./app-sidebar";
 
-export default async function SideBarWrapper({
+export default  function SideBarWrapper({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const cookieStore = await cookies();
-    const isCollapsed = cookieStore.get('sidebar:state')?.value !== 'true';
+let isCollapsed = true;
     return (
         <SidebarProvider defaultOpen={!isCollapsed}>
             <AppSidebar />

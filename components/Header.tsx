@@ -7,7 +7,9 @@ import { Button } from '@/components/ui/button';
 import { BetterTooltip } from '@/components/ui/tooltip';
 import { PlusIcon } from './custom/icons';
 import { Bot, BrainCircuit } from 'lucide-react';
-
+import { SidebarToggle } from './custom/sidebar-toggle';
+import { useWindowSize } from 'usehooks-ts';
+import { useSidebar } from './sidebar';
 
 export function ChatHeader({
     selectedModelId,
@@ -18,10 +20,12 @@ export function ChatHeader({
 }) {
     const pathname = usePathname();
     const isHome = pathname === '/';
+    const { width: windowWidth } = useWindowSize();
+    const { open } = useSidebar()
 
     return (
         <header className="flex sticky top-0 bg-background py-1.5 items-center px-2 md:px-2 gap-2">
-            { (
+            {(!open || windowWidth < 768) && (
                 <BetterTooltip content="New Chat">
                     <Button
                         variant="outline"

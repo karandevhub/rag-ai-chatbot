@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import SideBarWrapper from "@/components/custom/side-bar-wrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +22,9 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {children}
+        <SideBarWrapper>
+          {children}
+        </SideBarWrapper>
       </body>
     </html>
   );
