@@ -1,13 +1,15 @@
 
-import { DEFAULT_MODEL_NAME, models } from '@/ai/models';
 import Chat from '../components/Chat';
+import SideBarWrapper from '@/components/custom/side-bar-wrapper';
 
 export default async function Page() {
 
 
     return (
-        <Chat
-            selectedModelId={"gpt-3.5-turbo"}
-        />
+        <SideBarWrapper>
+            <Chat
+                selectedModelId={"gpt-3.5-turbo"}
+            />
+        </SideBarWrapper>
     );
 }
