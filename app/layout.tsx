@@ -17,8 +17,7 @@ export default async function RootLayout({
 }>) {
 
 
-  const cookieStore = await cookies();
-  const isCollapsed = cookieStore.get('sidebar:state')?.value !== 'true';
+
   
   return (
     <html lang="en">
