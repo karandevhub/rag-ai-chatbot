@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   description: "A chatbot that answers questions from documents using retrieval-augmented generation (RAG) technology.",
 };
 
+export const dynamic = "force-dynamic"
 export default async function RootLayout({
   children,
 }: Readonly<{

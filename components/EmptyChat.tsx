@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { FileText, MessageCircle, Info, Upload } from 'lucide-react';
 
