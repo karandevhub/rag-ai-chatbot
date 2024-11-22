@@ -36,18 +36,15 @@ export default function Chat() {
     }
   };
 
-  let storedFile: any
   let selectedModelId: any
   if (typeof window !== "undefined") {
     selectedModelId = window?.localStorage.getItem('model-id');
-    storedFile = window?.localStorage.getItem("uploadedFile");
   }
 
 
   const { messages, input, setInput, stop, handleInputChange, handleSubmit: originalHandleSubmit, isLoading, setMessages, } = useChat({
     api: '/api/chat',
     body: {
-      storedFile,
       selectedModelId
     },
     onError: (error) => {
@@ -61,7 +58,7 @@ export default function Chat() {
     maxSteps: 3,
   });
 
-  
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

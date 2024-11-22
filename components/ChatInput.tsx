@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useRef, useState, ChangeEvent, FormEvent, KeyboardEvent as ReactKeyboardEvent, useEffect } from 'react';
+import React, { useRef, ChangeEvent, FormEvent, KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { Paperclip, Send, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { getFileIcon } from '@/lib/utils';
+import useFileStore from '@/utils/store';
+
 
 interface ChatInputProps {
   input: string;
@@ -19,17 +21,13 @@ const ChatInput: React.FC<ChatInputProps> = ({
   handleSubmit,
   isLoading
 }) => {
-  const [file, setFile] = useState<{ name: string; type: string } | null>(null);
-  const [uploadError, setUploadError] = useState<string>('');
-  const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-
-
+  const { file, uploadError, isUploading, setFile, setUploadError, setIsUploading, clearFile } = useFileStore();
 
   const removeFile = async () => {
-    setIsUploading(true)
+    setIsUploading(true);
     try {
       const response = await fetch('api/clearstore', {
         method: 'GET',
@@ -38,26 +36,18 @@ const ChatInput: React.FC<ChatInputProps> = ({
       if (!response.ok) {
         throw new Error(`Upload failed: ${response.statusText}`);
       }
-      localStorage.removeItem('uploadedFile');
-      setFile(null);
-      setUploadError('');
-      setIsUploading(false);
+      
+      clearFile();
+      
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
     } catch (error) {
       setIsUploading(false);
       console.error('Error clearing store file:', error);
-      setUploadError('Failed to clear store. Please try again.')
+      setUploadError('Failed to clear store. Please try again.');
     }
   };
-
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    handleSubmit(e);
-  };
-
-  
 
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = e.target.files?.[0];
@@ -82,14 +72,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
           throw new Error(`Upload failed: ${response.statusText}`);
         }
 
-        if (typeof window !== 'undefined') {
-          localStorage.setItem("uploadedFile", JSON.stringify({
-            name: uploadedFile.name,
-            type: uploadedFile.type
-          }));
-        }
-
-
         console.log(`Uploaded file`, uploadedFile.name);
       } catch (error) {
         console.error('Error uploading file:', error);
@@ -100,25 +82,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
       }
     }
   };
-  let storedFile: any
 
-
-  if (typeof window !== "undefined") {
-    storedFile = window?.localStorage.getItem("uploadedFile");
-  }
-  
-
-
-  useEffect(() => {
-    try {
-      setFile(storedFile ? JSON.parse(storedFile) : null);
-    } catch (error) {
-      console.error("Error parsing stored file:", error);
-      setFile(null);
-    }
-  }, [storedFile]);
-
- 
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleSubmit(e);
+  };
 
   const handleKeyPress = (e: ReactKeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {

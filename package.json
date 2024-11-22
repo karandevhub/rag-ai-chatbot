@@ -64,7 +64,8 @@
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "usehooks-ts": "^3.1.0",
-    "uuid": "^11.0.3"
+    "uuid": "^11.0.3",
+    "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.15",

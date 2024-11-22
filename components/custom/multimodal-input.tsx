@@ -20,6 +20,7 @@ import { ArrowUpIcon, PaperclipIcon, StopIcon } from './icons';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
 import { Loader2, X } from 'lucide-react';
+import useFileStore from '@/utils/store';
 
 
 
@@ -52,10 +53,7 @@ export function MultimodalInput({
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
-  const [file, setFile] = useState<{ name: string; type: string } | null>(null);
-  const [uploadError, setUploadError] = useState<string>('');
-  const [isUploading, setIsUploading] = useState(false);
-
+  const { file, uploadError, isUploading, setFile, setUploadError, setIsUploading, clearFile } = useFileStore();
 
   const removeFile = async () => {
     setIsUploading(true)
@@ -68,7 +66,7 @@ export function MultimodalInput({
         throw new Error(`Upload failed: ${response.statusText}`);
       }
       localStorage.removeItem('uploadedFile');
-      setFile(null);
+      clearFile()
       setUploadError('');
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -104,12 +102,7 @@ export function MultimodalInput({
           throw new Error(`Upload failed: ${response.statusText}`);
         }
 
-        if (typeof window !== 'undefined') {
-          localStorage.setItem("uploadedFile", JSON.stringify({
-            name: uploadedFile.name,
-            type: uploadedFile.type
-          }));
-        }
+
 
 
         console.log(`Uploaded file`, uploadedFile.name);
@@ -122,24 +115,6 @@ export function MultimodalInput({
       }
     }
   };
-
-  let storedFile: any
-
-
-  if (typeof window !== "undefined") {
-    storedFile = window?.localStorage.getItem("uploadedFile");
-  }
-
-
-  useEffect(() => {
-    try {
-      setFile(storedFile ? JSON.parse(storedFile) : null);
-    } catch (error) {
-      console.error("Error parsing stored file:", error);
-      setFile(null);
-    }
-  }, [storedFile]);
-
 
 
   useEffect(() => {
@@ -211,7 +186,7 @@ export function MultimodalInput({
         onChange={handleFileUpload}
         accept=".pdf,.docx,.pptx"
       />
-      
+
       {uploadError && (
         <div className="flex justify-end mb-2">
           <div className="text-sm text-red-500">{uploadError}</div>
