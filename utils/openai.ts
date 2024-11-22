@@ -9,7 +9,7 @@ import { MemoryVectorStore } from 'langchain/vectorstores/memory';
 let embeddingsInstance: OpenAIEmbeddings | null = null;
 
 export const client = new MongoClient(
-  process.env.MONGODB_URI || 'bdsfdbsfbskdbfksbdkfbskdbfksbdfkbsdjfbskjdbfsbdf'
+  process.env.MONGODB_URI || 'mongodb+srv://sdhbsb346:dsfnbsdb@cluster0.nni1s.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
 );
 await client.connect();
 
